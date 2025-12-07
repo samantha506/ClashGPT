@@ -1,0 +1,659 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+  /* ============ (Tu CSS intacto con pequeños ajustes para modal) ============ */
+  body {
+    margin: 0;
+    background: #0d0d0f;
+    font-family: Arial, sans-serif;
+    color: white;
+  }
+  header {
+    width: 100%;
+    padding: 30px 0 40px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+    background: radial-gradient(circle at center,
+      rgba(138, 0, 255, 0.25),
+      rgba(30, 0, 50, 0.65),
+      #0d0d0f 70%);
+    border-bottom: 1px solid #1e1e1e;
+    box-shadow: 0 4px 30px rgba(176, 98, 255, 0.25);
+  }
+  header::before {
+    content: "";
+    position: absolute;
+    width: 380px;
+    height: 380px;
+    left: 50%;
+    transform: translateX(-50%);
+    top: -120px;
+    background: radial-gradient(circle,
+      rgba(176, 98, 255, 0.55),
+      rgba(0, 0, 0, 0));
+    filter: blur(80px);
+    animation: pulse 4s infinite alternate;
+    z-index: 0;
+  }
+  @keyframes pulse {
+    0%   { opacity: .5; transform: translateX(-50%) scale(1); }
+    100% { opacity: .8; transform: translateX(-50%) scale(1.2); }
+  }
+  .brand-logo { width: 130px; filter: drop-shadow(0 0 15px rgba(140,50,255,0.9)); position: relative; z-index: 5; animation: fadeDown 1.3s ease-out; }
+  @keyframes fadeDown { from { opacity: 0; transform: translateY(-20px); } to { opacity: 1; transform: translateY(0); } }
+  .brand-name { margin-top: 10px; font-size: 28px; font-weight: 800; letter-spacing: 2px; text-transform: uppercase; color: #d4c9ff; text-shadow: 0 0 6px rgba(176,98,255,0.7), 0 0 14px rgba(176,98,255,0.4); animation: fadeUp 1.4s ease-out; }
+  @keyframes fadeUp { from { opacity: 0; transform: translateY(15px);} to { opacity: 1; transform: translateY(0);} }
+  .floating-bitcoin { position: absolute; right: 20px; top: 35px; width: 85px; opacity: 0.9; filter: drop-shadow(0 0 10px rgba(255,215,0,0.6)); animation: floatBitcoin 4s ease-in-out infinite; z-index: 3; }
+  @keyframes floatBitcoin { 0%,100%{transform:translateY(0);}50%{transform:translateY(-12px);} }
+
+  .container { padding-bottom: 110px; }
+  .tabs { display:flex; overflow-x:auto; background:#141418; border-bottom:1px solid #222; }
+  .tab { padding:14px 22px; cursor:pointer; color:#aaa; white-space:nowrap; font-size:14px; text-decoration:none; }
+  .tab.active { color:#b062ff; border-bottom:2px solid #b062ff; }
+
+  #cardsGrid { display:flex; flex-direction:column; gap:18px; padding:16px; padding-bottom:100px; }
+
+  .card { background:#15151a; border-radius:16px; padding:14px; border:1px solid #252525; box-shadow:0 0 15px rgba(176,98,255,0.08); position:relative; }
+  .card-head { display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; }
+  .card-title { font-size:16px; font-weight:700; }
+  .vip-tag { padding:5px 10px; border-radius:50px; font-size:12px; background:#b062ff33; border:1px solid #b062ff66; }
+
+  .card-img { width:100%; height:140px; object-fit:cover; border-radius:12px; margin-bottom:12px; }
+  .card-body { display:flex; justify-content:space-between; flex-wrap:wrap; gap:8px; }
+  .details { font-size:13px; line-height:1.4; min-width:220px; }
+  .side { text-align:right; min-width:160px; }
+
+  .remaining { font-size:13px; margin-bottom:12px; }
+  .qty { display:flex; align-items:center; background:#1d1d22; padding:5px 10px; border-radius:10px; margin-right:8px; }
+  .qty .num { margin:0 8px; color:white; }
+  .qty button { background:#333; color:white; border:none; padding:3px 8px; border-radius:5px; cursor:pointer; }
+
+  .rent-btn { padding:8px 14px; background:#b062ff; border:none; border-radius:10px; color:white; cursor:pointer; }
+
+  .bottom-bar { position:fixed; bottom:0; left:0; right:0; height:88px; background:#0b0b0e; border-top:1px solid #1e1e1e; display:flex; justify-content:space-around; align-items:center; padding-bottom:5px; z-index:50; }
+  .bottom-item { display:flex; flex-direction:column; align-items:center; color:#7b7b7b; font-size:12px; cursor:pointer; }
+  .bottom-item .icon { font-size:22px; margin-bottom:4px; }
+  .bottom-item.active { color:#b062ff; }
+  .bottom-center-btn { position:relative; margin-top:-40px; background:#b062ff; width:70px; height:70px; border-radius:50%; display:flex; align-items:center; justify-content:center; box-shadow:0 0 20px rgba(176,98,255,0.4); cursor:pointer; }
+  .center-icon { font-size:28px; color:white; }
+
+  /* notifications & loading */
+  .notif-box { position: fixed; top: 18px; right: 18px; background: #4CAF50; color: white; padding: 12px 16px; border-radius: 10px; font-size: 14px; z-index: 9999; box-shadow: 0 6px 18px rgba(0,0,0,.35); transition: opacity .35s; }
+  .notif-box.error { background: #e74c3c; }
+  .loading-box { position: fixed; top: 45%; left: 50%; transform: translate(-50%, -50%); background: #111; padding: 18px 22px; border-radius: 12px; color: #fff; z-index: 9999; display:flex; flex-direction:column; align-items:center; gap:10px; box-shadow: 0 10px 30px rgba(0,0,0,.5); }
+  .spinner { width:32px; height:32px; border:4px solid #ffffff33; border-top-color:#fff; border-radius:50%; animation: spin .8s linear infinite; }
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* VP modal */
+  .vp-modal-backdrop {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.6);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+  }
+  .vp-modal-backdrop.show { display:flex; }
+  .vp-modal {
+    width: 92%;
+    max-width: 420px;
+    background: linear-gradient(180deg,#0f0f12,#09090b);
+    border-radius: 12px;
+    padding: 18px;
+    border: 1px solid #3a2a5a;
+    box-shadow: 0 12px 30px rgba(11,6,20,0.6);
+    transform: scale(.96);
+    opacity: 0;
+    transition: transform .26s cubic-bezier(.2,.9,.3,1), opacity .26s;
+  }
+  .vp-modal.show { transform: scale(1); opacity: 1; }
+  .vp-modal h3 { margin:0 0 8px; color:#ffd8ff; font-size:18px; }
+  .vp-modal p { margin:6px 0; color:#ddd; }
+  .vp-modal .btns { margin-top:12px; display:flex; gap:8px; justify-content:flex-end; }
+  .vp-modal .btn { padding:8px 12px; border-radius:8px; border:none; cursor:pointer; }
+  .vp-modal .btn.primary { background:#b062ff; color:white; }
+  .vp-modal .icon-warn { font-size:34px; color:#ffcc00; display:inline-block; margin-right:10px; vertical-align:middle; animation: wiggle .9s infinite; }
+  @keyframes wiggle { 0%{transform:rotate(-6deg)}50%{transform:rotate(6deg)}100%{transform:rotate(-6deg)} }
+
+  /* small responsive tweaks */
+  @media (max-width:600px){ .card-body{flex-direction:column} .side{ text-align:left; } }
+</style>
+</head>
+
+<body>
+
+<header>
+  <img src="clashgpt.png" class="brand-logo" alt="ClashGPT Logo">
+  <div class="brand-name">ClashGPT</div>
+  <img src="logo.png" class="floating-bitcoin" alt="Bitcoin">
+</header>
+
+<div class="container">
+  <div class="tabs">
+    <a class="tab active" href="dashboard.html" data-tab="all">All</a>
+    <a class="tab" href="vip0.html" data-tab="vip0">VIP 0</a>
+    <a class="tab" href="vip1.html" data-tab="vip1">VIP 1</a>
+    <a class="tab" href="vip2.html" data-tab="vip2">VIP 2</a>
+    <a class="tab" href="vip3.html" data-tab="vip3">VIP 3</a>
+  </div>
+
+  <div id="cardsGrid"></div>
+</div>
+
+<!-- VP Modal (cuando el plan requiere VP mayor que el usuario) -->
+<div id="vpModalBackdrop" class="vp-modal-backdrop" aria-hidden="true">
+  <div id="vpModal" class="vp-modal" role="dialog" aria-modal="true">
+    <div style="display:flex;align-items:center">
+      <div class="icon-warn"><i class="fa-solid fa-triangle-exclamation"></i></div>
+      <div>
+        <h3>VP insuficiente</h3>
+        <p id="vpModalText">Tu VP actual no te permite comprar este plan.</p>
+      </div>
+    </div>
+    <div class="btns">
+      <button id="vpModalClose" class="btn">Cerrar</button>
+    </div>
+  </div>
+</div>
+
+<div class="bottom-bar">
+  <div class="bottom-item active" onclick="location.href='dashboard.html'">
+    <div class="icon"><i class="fa-solid fa-house"></i></div>
+    <div class="label">Home</div>
+  </div>
+
+  <div class="bottom-item" onclick="location.href='invest.html'">
+    <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
+    <div class="label">Invest</div>
+  </div>
+
+  <div class="bottom-center-btn" onclick="location.href='wallet.html'">
+    <div class="center-icon"><i class="fa-solid fa-wallet"></i></div>
+  </div>
+
+  <div class="bottom-item" onclick="location.href='equipo.html'">
+    <div class="icon"><i class="fa-solid fa-users"></i></div>
+    <div class="label">Team</div>
+  </div>
+
+  <div class="bottom-item" onclick="location.href='Support.html'">
+    <div class="icon"><i class="fa-solid fa-headset"></i></div>
+    <div class="label">Support</div>
+  </div>
+</div>
+
+<script type="module">
+/* ===========================
+   Firebase + Firestore setup
+   =========================== */
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getAuth, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+import {
+  getFirestore, doc, collection, getDoc, setDoc, addDoc, onSnapshot, runTransaction, serverTimestamp, query, where, getDocs
+} from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+  authDomain: "clashgpt-8a055.firebaseapp.com",
+  projectId: "clashgpt-8a055",
+  storageBucket: "clashgpt-8a055.firebasestorage.app",
+  messagingSenderId: "152687596916",
+  appId: "1:152687596916:web:8c8068c6d347d9d9198821"
+};
+
+const app = initializeApp(firebaseConfig);
+const auth = getAuth(app);
+const db = getFirestore(app);
+
+/* -------------------------
+   Productos (todos duran 50 días)
+   ------------------------- */
+/* Nota: mantenemos los mismos objetos, pero NO confiamos en su campo 'income' fijo:
+   calculamos income real con la fórmula: income = rent * (profitPerc/100) * days
+*/
+const products = [
+  { id:'p1', title:'Experience product ①', vip:'vip0', rent:10, days:50, income:0, profitPerc:2.3, dailyPrincipal:0.23, img:'dog.png' },
+  { id:'p2', title:'Daily interest rate products: ②', vip:'vip1', rent:30, days:50, income:0, profitPerc:2.5, dailyPrincipal:0.75, img:'pepe.png' },
+  { id:'p3', title:'Daily interest rate products: ③', vip:'vip2', rent:60, days:50, income:0, profitPerc:2.8, dailyPrincipal:1.68, img:'xrp.png' },
+  { id:'p4', title:'Daily interest rate products: ④', vip:'vip3', rent:120, days:50, income:0, profitPerc:3.0, dailyPrincipal:3.6, img:'bch.png' },
+  { id:'p5', title:'Daily interest rate products: ⑤', vip:'vip3', rent:300, days:50, income:0, profitPerc:3.2, dailyPrincipal:9.6, img:'bnb.png' },
+  { id:'p6', title:'Daily interest rate products: ⑥', vip:'vip3', rent:480, days:50, income:0, profitPerc:3.4, dailyPrincipal:16.32, img:'car.png' },
+  { id:'p7', title:'Daily interest rate products: ⑦', vip:'vip3', rent:1000, days:50, income:0, profitPerc:3.6, dailyPrincipal:36, img:'eth.png' },
+  { id:'p8', title:'Daily interest rate products: ⑧', vip:'vip3', rent:3000, days:50, income:0, profitPerc:3.8, dailyPrincipal:114, img:'et1h.png' }
+];
+
+/* -------------------------
+   UI refs
+   ------------------------- */
+const grid = document.getElementById("cardsGrid");
+
+/* -------------------------
+   App state
+   ------------------------- */
+let currentUser = null;
+let walletListenerUnsub = null;
+let lotesListenerUnsub = null;
+let profileListenerUnsub = null;
+
+/* -------------------------
+   Auth state
+   ------------------------- */
+onAuthStateChanged(auth, user => {
+  if (!user) {
+    window.location.href = "login.html";
+    return;
+  }
+  currentUser = user;
+  initRealtimeListeners(user.uid);
+  renderCards();
+});
+
+/* -------------------------
+   Realtime listeners
+   ------------------------- */
+function initRealtimeListeners(uid) {
+  // wallet doc: users/{uid}/wallet/info
+  const walletDocRef = doc(db, "users", uid, "wallet", "info");
+  if (walletListenerUnsub) walletListenerUnsub();
+  walletListenerUnsub = onSnapshot(walletDocRef, (snap) => {
+    const data = snap.exists() ? snap.data() : { balance: 0 };
+    window._WALLET = data;
+  }, (err) => console.error("Wallet listener:", err));
+
+  // lotes collection (tus paquetes agrupados)
+  const lotesColRef = collection(db, "users", uid, "lotes");
+  if (lotesListenerUnsub) lotesListenerUnsub();
+  lotesListenerUnsub = onSnapshot(lotesColRef, (snap) => {
+    const lotes = [];
+    snap.forEach(d => lotes.push({ id: d.id, ...d.data() }));
+    window._LOTES = lotes;
+  }, (err) => console.error("Lotes listener:", err));
+
+  // profile doc (para leer vip)
+  const profileRef = doc(db, "users", uid, "profile", "info");
+  if (profileListenerUnsub) profileListenerUnsub();
+  profileListenerUnsub = onSnapshot(profileRef, (snap) => {
+    const data = snap.exists() ? snap.data() : { vip: 0 };
+    window._PROFILE = data;
+  }, (err) => console.error("Profile listener:", err));
+}
+
+/* -------------------------
+   Helpers: notifications + loading
+   ------------------------- */
+function showNotification(message, type = "success") {
+  const box = document.createElement("div");
+  box.className = "notif-box " + (type === "error" ? "error" : "");
+  box.innerText = message;
+  document.body.appendChild(box);
+  setTimeout(() => box.style.opacity = "0", 1200);
+  setTimeout(() => box.remove(), 1600);
+}
+
+function showLoading() {
+  const load = document.createElement("div");
+  load.className = "loading-box";
+  load.innerHTML = `<div class="spinner"></div><div>Procesando...</div>`;
+  document.body.appendChild(load);
+  return load;
+}
+
+/* -------------------------
+   Utility: map vip string (e.g. "vip1") to numeric level
+   ------------------------- */
+function vipStringToLevel(vipStr){
+  if(!vipStr) return 0;
+  const m = String(vipStr).toLowerCase().match(/vip\s*(\d+)/) || String(vipStr).toLowerCase().match(/v?p\s*(\d+)/);
+  if(m && m[1]) return Number(m[1]);
+  if(!isNaN(Number(vipStr))) return Number(vipStr);
+  return 0;
+}
+
+/* -------------------------
+   Compute income helper (OPCIÓN A: income = solo ganancias en el periodo)
+   income = rent * (profitPerc/100) * days
+   dailyAmount = rent * (profitPerc/100)
+   ------------------------- */
+function computeIncomeFor(p) {
+  const rent = Number(p.rent);
+  const profitPerc = Number(p.profitPerc);
+  const days = Number(p.days);
+  const dailyAmount = Number((rent * (profitPerc/100)));
+  const totalIncome = Number((dailyAmount * days).toFixed(8));
+  return { dailyAmount, totalIncome };
+}
+
+/* -------------------------
+   Render cards (productos)
+   ------------------------- */
+function createCard(p, idx) {
+  const card = document.createElement("div");
+  card.className = "card";
+
+  const rent = Number(p.rent);
+  const profitPerc = Number(p.profitPerc);
+  const dailyPrincipal = Number(p.dailyPrincipal);
+
+  // calculos correctos
+  const calc = computeIncomeFor(p);
+  const incomeToShow = calc.totalIncome;
+
+  card.innerHTML = `
+    <div class="card-head">
+      <div class="card-title">${p.title}</div>
+      <div class="vip-tag">${p.vip.toUpperCase()}</div>
+    </div>
+
+    <img class="card-img" src="${p.img}" alt="${p.title}">
+
+    <div class="card-body">
+      <div class="details">
+        <div><strong>Rental Amount:</strong> <span class="rent-val">${rent.toFixed(2)}</span> USDT</div>
+        <div><strong>Rental Period:</strong> ${p.days} days</div>
+        <div><strong>Total Income (x1):</strong> <span class="income-val">${Number(incomeToShow).toFixed(2)}</span> USDT</div>
+        <div><strong>Daily Profit (%):</strong> <span class="profit-val">${profitPerc.toFixed(2)}</span>%</div>
+        <div><strong>Daily Principal:</strong> <span class="principal-val">${dailyPrincipal.toFixed(2)}</span> USDT</div>
+      </div>
+
+      <div class="side">
+        <div style="height:18px"></div>
+
+        <div style="display:flex; align-items:center; justify-content:flex-end;">
+          <div class="qty">
+            <button class="dec">-</button>
+            <div class="num">1</div>
+            <button class="inc">+</button>
+          </div>
+
+          <button class="rent-btn">Rent</button>
+        </div>
+      </div>
+    </div>
+  `;
+
+  const decBtn = card.querySelector(".dec");
+  const incBtn = card.querySelector(".inc");
+  const numEl = card.querySelector(".num");
+
+  const rentValEl = card.querySelector(".rent-val");
+  const incomeValEl = card.querySelector(".income-val");
+  const principalValEl = card.querySelector(".principal-val");
+  const rentBtn = card.querySelector(".rent-btn");
+
+  function update() {
+    const n = Number(numEl.textContent);
+    rentValEl.textContent = (rent * n).toFixed(2);
+    incomeValEl.textContent = (incomeToShow * n).toFixed(2);
+    principalValEl.textContent = (dailyPrincipal * n).toFixed(2);
+  }
+
+  incBtn.addEventListener("click", () => {
+    numEl.textContent = Number(numEl.textContent) + 1;
+    update();
+  });
+
+  decBtn.addEventListener("click", () => {
+    const v = Number(numEl.textContent);
+    if (v > 1) {
+      numEl.textContent = v - 1;
+      update();
+    }
+  });
+
+  rentBtn.addEventListener("click", async () => {
+    const n = Number(numEl.textContent);
+    const totalCost = Number((rent * n).toFixed(2));
+
+    if (!currentUser) {
+      showNotification("Debes iniciar sesión", "error");
+      setTimeout(()=> location.href = "login.html", 700);
+      return;
+    }
+
+    // Verificar VP del usuario vs VP del plan
+    const userVipRaw = window._PROFILE ? window._PROFILE.vip : 0;
+    const userVipLevel = vipStringToLevel(userVipRaw);
+    const planVipLevel = vipStringToLevel(p.vip);
+
+    if (userVipLevel < planVipLevel) {
+      const modalBackdrop = document.getElementById('vpModalBackdrop');
+      const modal = document.getElementById('vpModal');
+      const text = document.getElementById('vpModalText');
+      text.textContent = `Tu VP actual (${userVipLevel}) no te permite comprar este plan (${p.vip.toUpperCase()}).`;
+      modalBackdrop.classList.add('show');
+      modal.classList.add('show');
+      return;
+    }
+
+    // revisar balance en cache
+    const cachedBalance = window._WALLET ? Number(window._WALLET.balance || 0) : 0;
+    if (cachedBalance < totalCost) {
+      showNotification("Fondos insuficientes", "error");
+      setTimeout(() => window.location.href = "recharge.html", 900);
+      return;
+    }
+
+    const loader = showLoading();
+
+    try {
+      const uid = currentUser.uid;
+      const walletDocRef = doc(db, "users", uid, "wallet", "info");
+      const lotesColRef = collection(db, "users", uid, "lotes");
+      const tarjetasColRef = collection(db, "users", uid, "tarjetasCompradas");
+      const transactionsColRef = collection(db, "users", uid, "transactions");
+      const planesColRef = collection(db, "users", uid, "planes"); // <-- nueva colección "planes"
+
+      // 1) buscar lote existente con idBase===p.id y purchaseDate===today (fuera de tx)
+      const today = new Date().toISOString().split('T')[0];
+      const q = query(lotesColRef, where("idBase", "==", p.id), where("purchaseDate", "==", today));
+      const qSnap = await getDocs(q);
+      let existing = null;
+      qSnap.forEach(d => { existing = { id: d.id, data: d.data() }; });
+
+      // precalculos por unidad
+      const perUnit = computeIncomeFor(p); // dailyAmount, totalIncome (per unit)
+      const perUnitDaily = perUnit.dailyAmount;
+      const perUnitTotalIncome = perUnit.totalIncome;
+
+      // precalculos para plan (multiples unidades)
+      const totalDailyAmount = Number((perUnitDaily * n).toFixed(8));
+      const totalIncomeAllUnits = Number((perUnitTotalIncome * n).toFixed(8));
+      const purchaseISO = new Date().toISOString();
+      const endISO = new Date(Date.now() + (p.days * 24 * 60 * 60 * 1000)).toISOString();
+
+      // 2) Ejecutar transacción atómica
+      await runTransaction(db, async (tx) => {
+        const wSnap = await tx.get(walletDocRef);
+        const currentBalance = wSnap.exists() ? Number(wSnap.data().balance || 0) : 0;
+
+        if (currentBalance < totalCost) {
+          throw new Error("INSUFFICIENT_FUNDS");
+        }
+
+        const newBalance = Number((currentBalance - totalCost).toFixed(8));
+        tx.set(walletDocRef, { balance: newBalance }, { merge: true });
+
+        // crear transacción (id autogenerado)
+        const txRef = doc(transactionsColRef);
+        tx.set(txRef, {
+          type: "Rent Product",
+          amount: -totalCost,
+          date: serverTimestamp(),
+          note: `Compra: ${p.title} x${n}`
+        });
+
+        // crear o actualizar lote (agrupado por día + producto)
+        if (existing) {
+          const loteRef = doc(db, "users", uid, "lotes", existing.id);
+          const prevQty = Number(existing.data.qty || 0);
+          const newQty = Number((prevQty + n).toFixed(0));
+
+          // recalcular campos dependientes
+          const updatedTotalIncome = Number(((Number(existing.data.totalIncome || 0)) + perUnitTotalIncome * n).toFixed(8));
+          const updatedDailyAmount = Number(((Number(existing.data.dailyAmount || 0)) + perUnitDaily * n).toFixed(8));
+
+          tx.update(loteRef, {
+            qty: newQty,
+            totalIncome: updatedTotalIncome,
+            dailyAmount: updatedDailyAmount,
+            updatedAt: serverTimestamp()
+          });
+        } else {
+          // crear nuevo lote
+          const loteRef = doc(lotesColRef);
+          const purchaseISO_local = purchaseISO;
+          const endISO_local = endISO;
+
+          tx.set(loteRef, {
+            idBase: p.id,
+            title: p.title,
+            vip: p.vip,
+            rent: p.rent,
+            days: p.days,
+            profitPerc: p.profitPerc,
+            dailyAmount: perUnitDaily,
+            totalIncome: perUnitTotalIncome,
+            img: p.img,
+            qty: n,
+            remainingDays: p.days,
+            lastClaim: null,
+            purchaseDate: today,
+            purchaseDateISO: purchaseISO_local,
+            endDateISO: endISO_local,
+            active: true,
+            createdAt: serverTimestamp()
+          });
+        }
+
+        // además, crear un documento por compra dentro de tarjetasCompradas
+        const tarjetaRef = doc(tarjetasColRef);
+        const purchaseISO_tarjeta = purchaseISO;
+        const endISO_tarjeta = endISO;
+
+        tx.set(tarjetaRef, {
+          idBase: p.id,
+          title: p.title,
+          rentPerUnit: p.rent,
+          units: n,
+          days: p.days,
+          profitPerc: p.profitPerc,
+          dailyAmountPerUnit: perUnitDaily,
+          totalIncomePerUnit: perUnitTotalIncome,
+          totalIncome: totalIncomeAllUnits,
+          purchaseDateISO: purchaseISO_tarjeta,
+          purchaseDateShort: today,
+          endDateISO: endISO_tarjeta,
+          active: true,
+          createdAt: serverTimestamp()
+        });
+
+        // --- NUEVO: crear documento en users/{uid}/planes con esquema completo ---
+        const planeRef = doc(planesColRef);
+        const planeData = {
+          idPlan: planeRef.id,
+          nombre: p.title,
+          descripcion: `Compra de ${p.title}`,
+          precioUnitario: p.rent,
+          unidades: n,
+          precioTotal: totalCost,
+          gananciaDiariaUnitaria: Number(perUnitDaily.toFixed(8)),
+          gananciaDiariaTotal: Number(totalDailyAmount.toFixed(8)),
+          gananciaTotalUnitaria: Number(perUnitTotalIncome.toFixed(8)),
+          gananciaTotal: Number(totalIncomeAllUnits.toFixed(8)),
+          dias: p.days,
+          imagen: p.img,
+          fechaCompraISO: purchaseISO,
+          fechaFinISO: endISO,
+          fechaCompraShort: today,
+          activo: true,
+          finalizado: false,
+          progresoPorcentaje: 0,
+          ganadoHastaHoy: 0,
+          profitPerc: p.profitPerc,
+          timestamp: serverTimestamp(),
+          uid: uid,
+          idBase: p.id,
+          // campos auxiliares para compatibilidad
+          createdAt: serverTimestamp(),
+          updatedAt: serverTimestamp()
+        };
+        tx.set(planeRef, planeData);
+        // --- fin: crear plan ---
+      }); // end runTransaction
+
+      loader.remove();
+      showNotification("Plan añadido correctamente ✔", "success");
+    } catch (err) {
+      loader.remove();
+      console.error("Compra error:", err);
+      if (err && err.message === "INSUFFICIENT_FUNDS") {
+        showNotification("Fondos insuficientes", "error");
+        setTimeout(() => window.location.href = "recharge.html", 900);
+      } else {
+        showNotification("Error al procesar la compra", "error");
+      }
+    }
+  });
+
+  update();
+  return card;
+}
+
+function renderCards(filter = "all") {
+  grid.innerHTML = "";
+  products
+    .filter(p => (filter === "all" ? true : p.vip === filter))
+    .forEach((p, idx) => grid.appendChild(createCard(p, idx)));
+}
+
+/* -------------------------
+   Tabs (misma lógica que antes)
+   ------------------------- */
+document.querySelectorAll(".tab").forEach(tab => {
+  tab.addEventListener("click", function (ev) {
+    const current = window.location.pathname.split("/").pop();
+    if (!current || current.toLowerCase().includes("dashboard")) {
+      ev.preventDefault();
+      document.querySelectorAll(".tab").forEach(t => t.classList.remove("active"));
+      tab.classList.add("active");
+      renderCards(tab.dataset.tab);
+    }
+  });
+});
+
+/* -------------------------
+   VP modal close
+   ------------------------- */
+document.getElementById('vpModalClose').addEventListener('click', () => {
+  document.getElementById('vpModalBackdrop').classList.remove('show');
+  document.getElementById('vpModal').classList.remove('show');
+});
+
+/* -------------------------
+   Init: render
+   ------------------------- */
+renderCards();
+
+// Exponer signOut para botones si quieres usarlo elsewhere
+window.appSignOut = async function() {
+  try {
+    await signOut(auth);
+    window.location.href = "login.html";
+  } catch (e) {
+    console.error(e);
+    showNotification("Error al cerrar sesión", "error");
+  }
+};
+
+</script>
+
+</body>
+</html>

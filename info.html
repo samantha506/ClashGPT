@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Información — ClashGPT</title>
+
+    <style>
+        :root {
+            --morado: #7d2bff;
+            --negro: #0a0a0e;
+            --blanco: #ffffff;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: Arial, sans-serif;
+        }
+
+        body {
+            background: var(--negro);
+            color: var(--blanco);
+            padding: 40px 20px;
+            text-align: center;
+        }
+
+        /* ---- Fondo animado ---- */
+        .space-bg {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: url("https://media.giphy.com/media/3ov9jNziFTMfzSumAw/giphy.gif") center/cover no-repeat;
+            opacity: 0.18;
+            z-index: -2;
+        }
+
+        /* ---- Contenedor ---- */
+        .container {
+            max-width: 750px;
+            margin: auto;
+            background: rgba(0,0,0,0.55);
+            padding: 30px;
+            border-radius: 12px;
+            backdrop-filter: blur(5px);
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        /* ---- Logo ---- */
+        .logo {
+            width: 140px;
+            margin-bottom: 25px;
+            filter: drop-shadow(0 0 12px var(--morado));
+        }
+
+        h1 {
+            color: var(--morado);
+            margin-bottom: 15px;
+            font-size: 2rem;
+        }
+
+        p {
+            line-height: 1.7;
+            font-size: 1.1rem;
+            opacity: 0.9;
+            margin-bottom: 25px;
+        }
+
+        /* ---- Botón atrás ---- */
+        .btn-back {
+            background: var(--morado);
+            color: var(--blanco);
+            padding: 10px 20px;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 15px;
+        }
+
+        .btn-back:hover {
+            background: #6920e0;
+            box-shadow: 0 0 12px var(--morado);
+        }
+    </style>
+</head>
+<body>
+
+    <div class="space-bg"></div>
+
+    <div class="container">
+
+        <!-- Logo opcional -->
+        <img src="clashgpt.png" alt="ClashGPT Logo" class="logo">
+
+        <h1>Información de la Plataforma</h1>
+
+        <p>
+            ClashGPT es una plataforma moderna enfocada en ayudarte a generar ganancias mediante
+            herramientas automatizadas, paneles inteligentes y soluciones basadas en tecnología avanzada.
+            Nuestro objetivo es ofrecerte una experiencia rápida, intuitiva y optimizada para maximizar tu rendimiento.
+        </p>
+
+        <!-- Botón atrás -->
+        <a class="btn-back" href="index.html">← Atrás</a>
+
+    </div>
+
+</body>
+</html>

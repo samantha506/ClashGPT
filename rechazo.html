@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Depósito Rechazado</title>
+
+<style>
+    body {
+        margin: 0;
+        padding: 0;
+        font-family: Arial, sans-serif;
+        background: #0d0b16;
+        color: #e3d7ff;
+        height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .box {
+        width: 90%;
+        max-width: 430px;
+        background: #1a132b;
+        padding: 35px;
+        border-radius: 20px;
+        text-align: center;
+        box-shadow: 0 0 25px rgba(255, 79, 79, 0.5);
+        border-left: 6px solid #ff4f4f;
+    }
+
+    h1 {
+        margin-bottom: 20px;
+        color: #ff6f6f;
+        text-shadow: 0 0 10px #ff4f4f;
+    }
+
+    .icon {
+        font-size: 60px;
+        color: #ff4f4f;
+        margin-bottom: 20px;
+        animation: shake 0.8s ease infinite;
+    }
+
+    @keyframes shake {
+        0%, 100% { transform: translateX(0); }
+        25% { transform: translateX(-6px); }
+        50% { transform: translateX(6px); }
+        75% { transform: translateX(-6px); }
+    }
+
+    .text {
+        font-size: 1.05em;
+        line-height: 1.5em;
+        color: #ffc2c2;
+        margin-bottom: 25px;
+    }
+
+    .btn-home {
+        padding: 14px 20px;
+        background: #ff4f4f;
+        color: white;
+        border: none;
+        border-radius: 12px;
+        font-size: 1.1em;
+        cursor: pointer;
+        box-shadow: 0 0 12px rgba(255,79,79,0.5);
+        transition: 0.2s;
+    }
+
+    .btn-home:hover {
+        background: #ff6f6f;
+        box-shadow: 0 0 20px rgba(255,79,79,0.7);
+    }
+</style>
+</head>
+<body>
+
+<div class="box">
+    <div class="icon">❌</div>
+    <h1>Depósito No Aprobado</h1>
+    <div class="text">
+        Lamentablemente, tu depósito no pudo ser aprobado. <br><br>
+        Esto puede deberse a un error en la transacción o a un TXID inválido. <br><br>
+        No te preocupes, tu saldo no se ha modificado y puedes intentar nuevamente.
+    </div>
+    <button class="btn-home" onclick="location.href='wallet.html'">Volver a Wallet</button>
+</div>
+
+</body>
+</html>

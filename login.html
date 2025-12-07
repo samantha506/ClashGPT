@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>ClashGPT - Login</title>
+
+<!-- FIREBASE (CDN) -->
+<script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+  // ===== NUEVA CONFIGURACIÓN FIREBASE (clashgpt-8a055) =====
+  const firebaseConfig = {
+    apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+    authDomain: "clashgpt-8a055.firebaseapp.com",
+    projectId: "clashgpt-8a055",
+    storageBucket: "clashgpt-8a055.firebasestorage.app",
+    messagingSenderId: "152687596916",
+    appId: "1:152687596916:web:8c8068c6d347d9d9198821"
+  };
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+
+  console.log("Firebase inicializado correctamente", app);
+
+  // FUNCIÓN DE LOGIN
+  window.loginUser = async function () {
+      const email = document.getElementById("email").value.trim();
+      const pass = document.getElementById("password").value.trim();
+      const loader = document.querySelector(".loader");
+      const msg = document.querySelector(".error-msg");
+
+      // limpiar
+      msg.style.display = "none";
+      msg.classList.remove("show");
+      loader.style.display = "block";
+
+      if (!email || !pass) {
+          loader.style.display = "none";
+          showError("⚠️ Todos los campos son obligatorios");
+          return;
+      }
+
+      try {
+        await signInWithEmailAndPassword(auth, email, pass);
+        // login OK
+        // pequeña espera para UX
+        loader.style.display = "block";
+        setTimeout(() => {
+          loader.style.display = "none";
+          window.location.href = "dashboard.html";
+        }, 600);
+      } catch (error) {
+        console.error("Login error:", error);
+        loader.style.display = "none";
+        // mensajes más específicos según código
+        if (error && error.code) {
+          if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
+            showError("❌ Credenciales incorrectas o usuario inexistente");
+          } else if (error.code === 'auth/invalid-email') {
+            showError("❌ Formato de correo inválido");
+          } else if (error.code === 'auth/too-many-requests') {
+            showError("❌ Demasiados intentos. Intenta más tarde.");
+          } else {
+            showError("❌ No se pudo iniciar sesión");
+          }
+        } else {
+          showError("❌ No se pudo iniciar sesión");
+        }
+      }
+  };
+
+  function showError(text) {
+      const msg = document.querySelector(".error-msg");
+      msg.textContent = text;
+      msg.style.display = "block";
+      // activar animación
+      msg.classList.add("show");
+      // quitar clase después
+      setTimeout(() => msg.classList.remove("show"), 3000);
+  }
+</script>
+
+<style>
+:root {
+    --morado: #8a2bff;
+    --neon: #b86bff;
+    --negro: #08080c;
+    --blanco: #ffffff;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+
+body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background: radial-gradient(circle at top, #18042c, #09040f 70%);
+    color: var(--blanco);
+    overflow: hidden;
+}
+
+/* ANIMACIÓN DE FONDO (misma apariencia que tenías) */
+.particles {
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    top: 0; left: 0;
+    z-index: -3;
+    background: url("https://i.gifer.com/7VE.gif") center/cover;
+    opacity: 0.18;
+}
+
+/* EFECTO GLOW */
+.glow-bg {
+    position: absolute;
+    width: 500px; height: 500px;
+    background: var(--morado);
+    filter: blur(180px);
+    top: 20%;
+    left: 50%;
+    transform: translateX(-50%);
+    opacity: 0.35;
+    animation: pulse 6s infinite alternate;
+}
+@keyframes pulse { from {opacity:0.25;} to {opacity:0.5;} }
+
+/* LOGIN BOX */
+.login-box {
+    width: 380px;
+    padding: 35px 30px;
+    background: rgba(255,255,255,0.06);
+    border: 1px solid rgba(255,255,255,0.15);
+    border-radius: 18px;
+    backdrop-filter: blur(12px);
+    box-shadow: 0 0 25px rgba(138,43,255,0.5);
+    animation: fadeIn 1.3s ease-out;
+    position: relative;
+}
+
+@keyframes fadeIn { from { opacity: 0; transform: scale(0.92); } to { opacity: 1; transform: scale(1); } }
+
+.logo { width: 150px; display: block; margin: 0 auto 20px; filter: drop-shadow(0 0 10px var(--neon)); }
+
+.login-box h2 { text-align: center; margin-bottom: 20px; font-size: 1.8rem; color: var(--neon); }
+
+/* INPUTS */
+.input-group { margin-bottom: 18px; position: relative; }
+
+input {
+    width: 100%;
+    padding: 13px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,255,255,0.25);
+    background: rgba(0,0,0,0.45);
+    color: var(--blanco);
+    outline: none;
+    font-size: 15px;
+    transition: 0.2s;
+}
+input:focus {
+    border-color: var(--neon);
+    box-shadow: 0 0 10px var(--neon);
+}
+
+/* SHOW PASSWORD */
+.show-pass {
+    position: absolute;
+    right: 12px;
+    top: 12px;
+    cursor: pointer;
+    font-size: 16px;
+    opacity: 0.7;
+}
+.show-pass:hover { opacity: 1; }
+
+/* BOTÓN LOGIN */
+button {
+    width: 100%;
+    padding: 12px;
+    font-size: 16px;
+    background: var(--morado);
+    color: var(--blanco);
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+    margin-top: 10px;
+}
+button:hover { background: #6a1fd4; transform: scale(1.02); }
+
+/* REGISTRO */
+.register-link {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: var(--neon);
+    text-decoration: none;
+}
+.register-link:hover { text-decoration: underline; }
+
+/* LOADER */
+.loader {
+    width: 22px;
+    height: 22px;
+    border: 3px solid #fff;
+    border-top: 3px solid var(--morado);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    margin: 12px auto 0;
+    display: none;
+}
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+/* MENSAJES DE ERROR ANIMADOS */
+.error-msg {
+    display: none;
+    text-align: center;
+    color: #ff6b6b;
+    margin-top: 10px;
+    font-weight: bold;
+    opacity: 0;
+    transition: all 0.5s ease;
+}
+.error-msg.show {
+    opacity: 1;
+    animation: shake 0.4s ease;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    20% { transform: translateX(-6px); }
+    40% { transform: translateX(6px); }
+    60% { transform: translateX(-6px); }
+    80% { transform: translateX(6px); }
+    100% { transform: translateX(0); }
+}
+</style>
+
+</head>
+<body>
+
+<div class="particles"></div>
+<div class="glow-bg"></div>
+
+<div class="login-box">
+
+    <img src="clashgpt.png" class="logo" alt="Logo ClashGPT">
+
+    <h2>Iniciar Sesión</h2>
+
+    <div class="input-group">
+        <input id="email" type="email" placeholder="Correo electrónico" />
+    </div>
+
+    <div class="input-group">
+        <input id="password" type="password" placeholder="Contraseña" />
+        <span class="show-pass" onclick="togglePass()">👁️</span>
+    </div>
+
+    <button onclick="loginUser()">Iniciar Sesión</button>
+
+    <div class="loader" aria-hidden="true"></div>
+
+    <div class="error-msg" role="alert" aria-live="polite"></div>
+
+    <a href="registro.html" class="register-link">¿No tienes cuenta? Regístrate</a>
+</div>
+
+<script>
+function togglePass() {
+    const pass = document.getElementById("password");
+    const icon = document.querySelector(".show-pass");
+    if (pass.type === "password") {
+        pass.type = "text";
+        icon.textContent = "🙈";
+    } else {
+        pass.type = "password";
+        icon.textContent = "👁️";
+    }
+}
+</script>
+
+</body>
+</html>

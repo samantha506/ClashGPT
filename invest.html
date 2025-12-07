@@ -1,0 +1,323 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invest</title>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+<style>
+:root{
+  --bg:#0d0d0f;
+  --card:#15151a;
+  --accent:#b062ff;
+  --accent-success:#4CAF50;
+  --muted:#7b7b7b;
+}
+
+body {
+  margin:0;
+  background: var(--bg);
+  font-family: Arial, sans-serif;
+  color:white;
+  overflow-x:hidden;
+}
+
+header {
+  width:100%;
+  padding:20px 0;
+  text-align:center;
+  background: radial-gradient(circle at center, rgba(138,0,255,0.2), rgba(30,0,50,0.6), var(--bg) 70%);
+  border-bottom:1px solid #1e1e1e;
+  box-shadow: 0 4px 30px rgba(176, 98, 255, 0.25);
+}
+.brand-logo { width:90px; filter: drop-shadow(0 0 10px rgba(140,50,255,0.8)); }
+
+h1 { text-align:center; margin:12px 0 8px; font-size:20px; color:#e9e0ff }
+.container { width:90%; margin:16px auto 100px auto; }
+
+.card {
+  background: rgba(21,21,26,0.75);
+  border-radius:12px;
+  padding:12px;
+  border:1px solid #252525;
+  margin-bottom:14px;
+  position:relative;
+  backdrop-filter: blur(6px);
+  transition: transform .2s, box-shadow .2s;
+}
+.card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 4px 20px rgba(176,98,255,0.25);
+}
+
+.vp-badge {
+  position:absolute;
+  right:10px;
+  top:10px;
+  background: var(--accent);
+  color:#0d0d0f;
+  padding:5px 8px;
+  border-radius:10px;
+  font-weight:700;
+  font-size:12px;
+}
+
+.card-img { width:100%; height:120px; object-fit:cover; border-radius:10px; margin-bottom:10px; display:block; }
+.small { font-size:12px; opacity:.85; color:#dcd6f9; margin-bottom:2px; }
+.small strong { color:#fff; }
+
+.progress-container { background:#1d1d22; border-radius:8px; overflow:hidden; height:10px; margin:8px 0; }
+.progress-bar { background:var(--accent); height:100%; width:0%; transition: width 0.5s; }
+
+.btn {
+  width:100%;
+  padding:8px;
+  font-size:14px;
+  background: var(--accent);
+  border:none;
+  border-radius:8px;
+  color:white;
+  cursor:pointer;
+  margin-top:6px;
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  transition: background 0.3s;
+}
+
+.btn[disabled] { opacity:0.6; cursor:not-allowed; }
+
+.spinner {
+  border:2px solid #fff;
+  border-top:2px solid rgba(255,255,255,0.3);
+  border-radius:50%;
+  width:16px;
+  height:16px;
+  animation: spin 1s linear infinite;
+  margin-left:6px;
+}
+
+@keyframes spin { 100% { transform: rotate(360deg); } }
+
+.timer {
+  font-size:12px;
+  opacity:.85;
+  color:#f1ecff;
+  margin-top:4px;
+  text-align:right;
+}
+
+.bottom-bar {
+  position: fixed;
+  bottom:0;
+  left:0;
+  right:0;
+  height:70px;
+  background:#0c0c10;
+  border-top:1px solid #1e1e1e;
+  display:flex;
+  justify-content: space-around;
+  padding-top:6px;
+  z-index:50;
+}
+.bottom-item { display:flex; flex-direction:column; align-items:center; color:var(--muted); font-size:12px; cursor:pointer; }
+.bottom-item .icon { font-size:20px; margin-bottom:2px; }
+.bottom-item.active { color:var(--accent); }
+
+.notif-box {
+  position: fixed; top: 16px; right: 16px;
+  background:#4CAF50; color:white;
+  padding:10px 14px; border-radius:8px;
+  font-size:14px; z-index:9999;
+  transition: opacity .35s;
+}
+.notif-box.error { background:#e74c3c; }
+</style>
+</head>
+<body>
+
+<header>
+  <img src="clashgpt.png" class="brand-logo" alt="logo">
+</header>
+
+<h1>Mis Planes Activos</h1>
+
+<div class="container" id="planesContainer"></div>
+
+<div class="bottom-bar">
+  <div class="bottom-item" onclick="location.href='dashboard.html'"><i class="fa-solid fa-house icon"></i><div>Home</div></div>
+  <div class="bottom-item active"><i class="fa-solid fa-chart-line icon"></i><div>Invest</div></div>
+  <div class="bottom-item" onclick="location.href='wallet.html'"><i class="fa-solid fa-wallet icon"></i><div>Wallet</div></div>
+  <div class="bottom-item" onclick="location.href='equipo.html'"><i class="fa-solid fa-users icon"></i><div>Equipo</div></div>
+  <div class="bottom-item" onclick="location.href='Support.html'"><i class="fa-solid fa-headset icon"></i><div>Support</div></div>
+</div>
+
+<script type="module">
+import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-app.js";
+import { getFirestore, collection, doc, getDocs, getDoc, updateDoc, deleteDoc, serverTimestamp, addDoc } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore.js";
+import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.7.1/firebase-auth.js";
+
+const firebaseConfig = {
+  apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+  authDomain: "clashgpt-8a055.firebaseapp.com",
+  projectId: "clashgpt-8a055",
+  storageBucket: "clashgpt-8a055.firebasestorage.app",
+  messagingSenderId: "152687596916",
+  appId: "1:152687596916:web:8c8068c6d347d9d9198821"
+};
+
+const app = initializeApp(firebaseConfig);
+const db = getFirestore(app);
+const auth = getAuth(app);
+
+function notify(text, type="success"){
+  const box = document.createElement("div");
+  box.className = "notif-box" + (type==="error"?" error":"");
+  box.textContent = text;
+  document.body.appendChild(box);
+  setTimeout(()=> box.style.opacity="0",1400);
+  setTimeout(()=> box.remove(),1800);
+}
+
+async function loadPlanes(uid){
+  const snap = await getDocs(collection(db,"users",uid,"planes"));
+  const planes = [];
+  snap.forEach(d => planes.push({id:d.id, data:d.data()}));
+  return planes;
+}
+
+async function render(uid){
+  const cont = document.getElementById("planesContainer");
+  cont.innerHTML = "Cargando...";
+
+  const planes = await loadPlanes(uid);
+  if(!planes.length){
+    cont.innerHTML = "<p style='text-align:center;opacity:.7'>No tienes planes activos.</p>";
+    return;
+  }
+
+  cont.innerHTML = "";
+
+  planes.forEach(p => {
+    const d = p.data;
+    const totalDays = d.dias || 50;
+    const remainingDays = totalDays - (d.progresoPorcentaje ? Math.floor((d.progresoPorcentaje/100)*totalDays) : 0);
+    const progress = d.progresoPorcentaje ?? 0;
+
+    const div = document.createElement("div");
+    div.className = "card";
+    div.innerHTML = `
+      <div class="vp-badge">VP ${d.vip ?? 0}</div>
+      <img class="card-img" src="${d.imagen || 'clashgpt.png'}">
+      <div class="small">Nombre: <strong>${d.nombre}</strong></div>
+      <div class="small">Cantidad: <strong>${d.unidades}</strong></div>
+      <div class="small">Días restantes: <strong>${remainingDays}</strong></div>
+      <div class="small">Ganancia diaria total: <strong>${d.gananciaDiariaTotal ?? 0} USDT</strong></div>
+      <div class="progress-container"><div class="progress-bar" style="width:${progress}%"></div></div>
+      <button class="btn" id="btn-${p.id}">Reclamar</button>
+      <div class="timer" id="timer-${p.id}"></div>
+    `;
+    cont.appendChild(div);
+
+    const timerEl = div.querySelector(".timer");
+    const btnEl = div.querySelector(".btn");
+    const progressBar = div.querySelector(".progress-bar");
+
+    function updateTimer(){
+      let last = d.lastClaim || 0;
+      if(typeof last==="object" && last.seconds) last = last.seconds*1000;
+      const remaining = Math.max(0, 86400000 - (Date.now() - last));
+      if(remaining<=0){
+        timerEl.textContent = "";
+        btnEl.disabled = false;
+      } else {
+        const h = Math.floor(remaining/3600000);
+        const m = Math.floor((remaining%3600000)/60000);
+        const s = Math.floor((remaining%60000)/1000);
+        timerEl.textContent = `Disponible en ${h}h ${m}m ${s}s`;
+        btnEl.disabled = true;
+      }
+    }
+    updateTimer();
+    setInterval(updateTimer,1000);
+
+    btnEl.onclick = async ()=>{
+      btnEl.disabled = true;
+      const spinner = document.createElement("span");
+      spinner.className="spinner";
+      btnEl.appendChild(spinner);
+
+      const now = Date.now();
+      let lastClaim = d.lastClaim || 0;
+      if(typeof lastClaim==="object" && lastClaim.seconds) lastClaim = lastClaim.seconds*1000;
+      if(now - lastClaim < 86400000){
+        notify("Debes esperar 24 horas.", "error");
+        spinner.remove();
+        btnEl.disabled = false;
+        return;
+      }
+
+      const gain = d.gananciaDiariaTotal ?? 0;
+
+      const walletRef = doc(db,"users",uid,"wallet","info");
+      const walletSnap = await getDoc(walletRef);
+      let balance = 0, profit = 0;
+      if(walletSnap.exists()){
+        const w = walletSnap.data();
+        balance = Number(w.balance || 0);
+        profit = Number(w.profit || 0);
+      }
+      balance += gain;
+      profit += gain;
+      await updateDoc(walletRef, { balance, profit });
+
+      await addDoc(collection(db,"users",uid,"transactions"),{
+        type:"Profit",
+        amount: gain,
+        note:`Ganancia del plan ${d.nombre}`,
+        date: serverTimestamp()
+      });
+
+      let newProgreso = progress + (100/totalDays);
+      let newRemaining = remainingDays - 1;
+      d.lastClaim = new Date();
+      d.progresoPorcentaje = Math.min(newProgreso,100);
+
+      // Animar progreso
+      progressBar.style.width = `${d.progresoPorcentaje}%`;
+
+      // Animación botón
+      btnEl.textContent = "✔️ Reclamado!";
+      btnEl.style.background = "var(--accent-success)";
+      spinner.remove();
+
+      setTimeout(async ()=>{
+        if(newRemaining <= 0){
+          await deleteDoc(doc(db,"users",uid,"planes",p.id));
+          notify(`Ganaste ${gain} USDT · Plan finalizado`);
+          div.remove(); // elimina la card
+        } else {
+          await updateDoc(doc(db,"users",uid,"planes",p.id),{
+            lastClaim: serverTimestamp(),
+            progresoPorcentaje: Math.min(newProgreso,100)
+          });
+          notify(`Ganaste ${gain} USDT`);
+          btnEl.textContent = "Reclamar";
+          btnEl.style.background = "var(--accent)";
+        }
+      },1000);
+
+      updateTimer();
+    }
+  });
+}
+
+onAuthStateChanged(auth,user=>{
+  if(!user) window.location.href="login.html";
+  else render(user.uid);
+});
+</script>
+
+</body>
+</html>

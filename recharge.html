@@ -1,0 +1,239 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Recharge</title>
+
+<style>
+:root{
+  --bg:#050006;
+  --card:#0d0011;
+  --card-light:#150019;
+  --accent:#b44bff;
+  --accent-glow:#c56cff;
+  --accent-soft:#b44bff33;
+  --text:#ffffff;
+  --text-muted:#9a7fa8;
+  --border:#26002e;
+  --radius:16px;
+  --success:#4fe36a;
+  --error:#ff4f4f;
+}
+
+/* ===== Base ===== */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: linear-gradient(180deg,var(--bg) 0%, #07020b 100%);
+  color:var(--text);
+  min-height:100vh;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+
+header{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  text-align:center;
+  padding:18px 0;
+  font-size:1.8em;
+  font-weight:700;
+  background:linear-gradient(180deg,#160018,#08000a);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 6px 28px #b44bff11;
+  color:white;
+  z-index:10;
+}
+
+/* ===== Container ===== */
+.container{
+  width:100%;
+  max-width:480px;
+  margin-top:90px;
+  background: var(--card);
+  padding:30px;
+  border-radius:var(--radius);
+  box-shadow:0 8px 30px rgba(180,75,255,0.06);
+  display:flex;
+  flex-direction:column;
+  gap:18px;
+}
+
+/* ===== Form elements ===== */
+label{
+  font-size:1.1em;
+  color:var(--accent);
+  font-weight:600;
+}
+
+select,input{
+  width:100%;
+  padding:14px;
+  border-radius:12px;
+  border:1px solid var(--accent);
+  background:var(--card-light);
+  color:var(--text);
+  font-size:1em;
+  transition:0.2s;
+}
+select:focus,input:focus{
+  outline:none;
+  box-shadow:0 0 12px var(--accent-soft);
+  border-color:var(--accent-glow);
+}
+
+/* ===== Address Box ===== */
+.address-box{
+  padding:14px;
+  background:var(--card-light);
+  border:1px solid var(--accent);
+  border-radius:12px;
+  color:var(--text);
+  word-break:break-all;
+  font-size:0.95em;
+  transition:0.2s;
+}
+
+/* ===== Buttons ===== */
+button{
+  padding:14px;
+  border-radius:12px;
+  border:none;
+  font-size:1.1em;
+  font-weight:700;
+  cursor:pointer;
+  transition:0.2s;
+}
+
+.copy-btn{
+  background: #3d007a;
+  color:white;
+  box-shadow:0 6px 20px #b44bff33;
+}
+.copy-btn:hover{
+  background:#4c009d;
+  transform:translateY(-2px);
+  box-shadow:0 10px 30px #c56cff44;
+}
+
+.deposit-btn{
+  background: linear-gradient(90deg,var(--accent),var(--accent-glow));
+  color:#fff;
+  box-shadow:0 8px 30px #b44bff33;
+}
+.deposit-btn:hover{
+  transform:translateY(-2px);
+  box-shadow:0 12px 40px #c56cff55;
+}
+
+/* ===== Note ===== */
+.note{
+  padding:18px;
+  background: #2a1f47;
+  border-left:4px solid var(--accent);
+  border-radius:12px;
+  font-size:0.95em;
+  color:var(--text);
+  line-height:1.6em;
+  white-space:pre-line; /* mantiene saltos de línea */
+}
+
+/* ===== Notification ===== */
+.notif-box{
+  position:fixed;
+  top:18px;
+  right:18px;
+  background:var(--accent);
+  color:white;
+  padding:12px 16px;
+  border-radius:12px;
+  font-size:14px;
+  box-shadow:0 12px 40px #b44bff33;
+  z-index:9999;
+  opacity:1;
+  transition:0.4s;
+}
+.notif-box.error{ background:var(--error); }
+
+@media(max-width:540px){
+  .container{ padding:22px; }
+  header{ font-size:1.6em; }
+}
+</style>
+</head>
+<body>
+
+<header>Recharge</header>
+
+<div class="container">
+  <label>Método de Recarga</label>
+  <select id="method">
+      <option value="">Seleccionar método</option>
+      <option value="bep20">USDT – BEP20</option>
+      <option value="trc20">USDT – TRC20</option>
+  </select>
+
+  <label>Dirección de Depósito</label>
+  <div id="addressBox" class="address-box">Selecciona un método…</div>
+  <button class="copy-btn" id="copyBtn">Copiar dirección</button>
+
+  <label>Monto a Depositar</label>
+  <input type="number" id="amount" placeholder="Ej: 20 USDT">
+
+  <a href="confirmacion.html">
+    <button type="button" class="deposit-btn">Depositar</button>
+  </a>
+
+  <div class="note">
+<strong>Nota importante sobre comisiones:</strong>
+
+• <strong>BEP20 (Binance Smart Chain):</strong> comisión aproximada entre <strong>0.30 y 0.60 USDT</strong>.<br>
+• <strong>TRC20 (TRON):</strong> comisión fija de <strong>1 USDT</strong> en la mayoría de wallets.<br><br>
+
+Envía el monto teniendo en cuenta la comisión para que llegue exactamente la cantidad que deseas recargar.  
+Ejemplo: si deseas recargar 20 USDT por TRC20, envía 21 USDT.
+  </div>
+</div>
+
+<!-- Notification container -->
+<div id="notifContainer"></div>
+
+<script>
+const addressBox = document.getElementById("addressBox");
+const copyBtn = document.getElementById("copyBtn");
+
+document.getElementById("method").addEventListener("change", function () {
+    if (this.value === "bep20") addressBox.textContent = "0x58647a4f2a9dc752bbcadf01063c4a114209cc2e";
+    else if (this.value === "trc20") addressBox.textContent = "TWVYK33bRXxETStHLUGMmpGfzsMxszLFwX";
+    else addressBox.textContent = "Selecciona un método…";
+});
+
+// Notificación flotante
+function showNotification(msg,type='success',timeout=1800){
+  const box = document.createElement('div');
+  box.className = 'notif-box' + (type==='error'?' error':'');
+  box.textContent = msg;
+  document.body.appendChild(box);
+  setTimeout(()=> box.style.opacity='0', timeout-200);
+  setTimeout(()=> box.remove(), timeout+200);
+}
+
+copyBtn.addEventListener("click", ()=>{
+  const address = addressBox.textContent;
+  if(address && address!=="Selecciona un método…"){
+    navigator.clipboard.writeText(address);
+    showNotification("Dirección copiada 🎉");
+  } else {
+    showNotification("Selecciona un método primero", "error");
+  }
+});
+</script>
+
+</body>
+</html>

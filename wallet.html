@@ -1,0 +1,470 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Wallet</title>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+<style>
+/* ================= PALETA MORADO NEÓN ================= */
+:root{
+  --bg:#050006;
+  --card:#0d0011;
+  --card-light:#150019;
+  --accent:#b44bff;
+  --accent-glow:#c56cff;
+  --accent-soft:#b44bff33;
+  --text:#ffffff;
+  --text-muted:#9a7fa8;
+  --border:#26002e;
+  --success:#4fe36a;
+  --error:#ff4f4f;
+  --radius:16px;
+}
+
+/* ===== base ===== */
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background: linear-gradient(180deg,#050006 0%, #07020b 100%);
+  color:var(--text);
+  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  -webkit-font-smoothing:antialiased;
+  -moz-osx-font-smoothing:grayscale;
+  min-height:100vh;
+}
+
+/* ===== header ===== */
+header{
+  width:100%;
+  padding:18px 0;
+  text-align:center;
+  font-weight:700;
+  font-size:20px;
+  background:linear-gradient(180deg,#160018,#08000a);
+  border-bottom:1px solid var(--border);
+  box-shadow:0 6px 28px #b44bff11;
+}
+
+/* ===== container ===== */
+.wallet-container{
+  padding:20px;
+  padding-bottom:10px;
+  max-width:980px;
+  margin:18px auto;
+}
+
+/* ===== cards ===== */
+.card {
+  background: linear-gradient(180deg,var(--card-light),var(--card));
+  border-radius:var(--radius);
+  border:1px solid var(--border);
+  box-shadow:0 8px 30px rgba(180,75,255,0.06);
+  transition:transform .18s ease, box-shadow .18s ease;
+}
+
+/* ===== user box ===== */
+.user-box{
+  display:flex;
+  gap:14px;
+  align-items:center;
+  padding:16px;
+  margin-bottom:16px;
+}
+.user-box:hover{ transform: translateY(-3px); box-shadow:0 12px 40px rgba(180,75,255,0.06); }
+.user-box img{ width:68px; height:68px; border-radius:50%; object-fit:cover; border:3px solid var(--accent); box-shadow:0 0 12px var(--accent-soft); }
+.user-info{ display:flex; flex-direction:column; }
+.user-name{ font-size:18px; font-weight:700; }
+.user-meta{ color:var(--text-muted); font-size:13px; margin-top:6px; }
+
+/* vip tag */
+.vip-tag{
+  display:inline-block;
+  margin-top:8px;
+  font-size:12px;
+  padding:4px 12px;
+  border-radius:999px;
+  border:1px solid var(--accent);
+  background:var(--accent-soft);
+  cursor:pointer;
+  transition:background .15s;
+}
+.vip-tag:hover{ background:var(--accent); color:white; }
+
+/* ===== balance box ===== */
+.balance-box{
+  padding:20px;
+  text-align:center;
+  margin-bottom:18px;
+}
+.balance-title{ font-size:14px; color:var(--text-muted); }
+.balance-amount{ margin-top:10px; font-size:32px; font-weight:900; color:var(--accent); text-shadow:0 0 10px var(--accent-soft); }
+
+/* buttons */
+.wallet-buttons{ margin-top:14px; display:flex; gap:10px; justify-content:center; }
+.btn{ padding:10px 14px; border-radius:10px; border:none; cursor:pointer; font-weight:700; }
+.btn.primary{ background: linear-gradient(90deg,var(--accent),var(--accent-glow)); color:#fff; box-shadow:0 8px 30px #b44bff33; }
+.btn.secondary{ background:rgba(255,255,255,0.03); color:var(--accent); border:1px solid var(--border); }
+
+/* ===== sections ===== */
+.section-title{ margin-top:18px; font-size:17px; font-weight:700; border-left:4px solid var(--accent); padding-left:12px; cursor:pointer; color:var(--accent); text-shadow:0 0 8px var(--accent-soft); }
+.box-summary{ margin-top:8px; padding:14px; text-align:center; border-radius:12px; font-size:18px; font-weight:700; color:var(--accent); background:linear-gradient(180deg,#0b0014,#0d0011); border:1px solid var(--border); box-shadow:0 6px 20px #b44bff11; }
+
+/* ===== logout ===== */
+.logout-btn{ width:100%; margin-top:18px; padding:14px; border-radius:12px; border:none; background:var(--error); color:white; font-weight:800; cursor:pointer; box-shadow:0 8px 30px rgba(255,79,79,0.18); }
+
+/* ===== bottom nav ===== */
+.bottom-bar{ position:fixed; left:0; right:0; bottom:0; height:78px; background:#08000b; border-top:1px solid var(--border); display:flex; justify-content:space-around; align-items:flex-start; padding-top:8px; z-index:50; box-shadow:0 -8px 40px #b44bff10; }
+.bottom-item{ display:flex; flex-direction:column; align-items:center; color:#7f5f9a; font-size:12px; cursor:pointer; transition:color .15s; }
+.bottom-item .icon{ font-size:20px; margin-bottom:4px; }
+.bottom-item.active,.bottom-item:hover{ color:var(--accent); text-shadow:0 0 8px var(--accent-soft); }
+
+/* ===== modal ===== */
+.modal-bg{ position:fixed; inset:0; background:rgba(0,0,0,0.6); display:none; align-items:center; justify-content:center; z-index:1000; }
+.modal{ background:var(--card); padding:18px; border-radius:14px; width:92%; max-width:480px; border:1px solid var(--border); box-shadow:0 14px 40px #b44bff22; max-height:84%; overflow:auto; position:relative; }
+.modal h3{ margin-top:0; color:var(--accent); }
+.modal .close{ position:absolute; right:12px; top:12px; font-size:18px; cursor:pointer; color:var(--accent); }
+
+/* notif */
+.notif-box{ position:fixed; top:18px; right:18px; background:var(--accent); color:white; padding:12px 16px; border-radius:12px; font-size:14px; box-shadow:0 12px 40px #b44bff33; z-index:9999; }
+.notif-box.error{ background:var(--error); }
+
+/* loading */
+.loading-box{ position:fixed; top:45%; left:50%; transform:translate(-50%,-50%); background:#0b0b0f; padding:18px 22px; border-radius:12px; color:#fff; z-index:9999; display:none; align-items:center; gap:12px; box-shadow:0 10px 30px rgba(0,0,0,0.5); }
+.spinner{ width:34px; height:34px; border:4px solid #ffffff22; border-top-color:#fff; border-radius:50%; animation:spin .8s linear infinite; }
+@keyframes spin{ to{ transform:rotate(360deg); } }
+
+/* transaction item */
+.item{ display:flex; justify-content:space-between; margin:6px 0; font-size:14px; color:var(--text-muted); }
+.item .right.green{ color:var(--success); font-weight:700; }
+.item .right.red{ color:var(--error); font-weight:700; }
+
+/* responsive */
+@media(max-width:540px){
+  .wallet-container{ padding:14px; }
+  .user-box img{ width:60px; height:60px; }
+  .balance-amount{ font-size:26px; }
+  .bottom-bar{ height:84px; padding-top:12px; }
+}
+</style>
+</head>
+<body>
+
+<header>My Wallet</header>
+<div class="wallet-container">
+
+  <!-- user -->
+  <div class="user-box card">
+    <img id="userAvatar" src="https://cdn-icons-png.flaticon.com/512/149/149071.png" alt="avatar">
+    <div class="user-info">
+      <div class="user-name" id="userName">—</div>
+      <div class="user-meta">ID: <span id="userID">—</span> • <span id="userVIP">VIP 0</span></div>
+    </div>
+  </div>
+
+  <!-- balance -->
+  <div class="balance-box card">
+    <div class="balance-title">Total Balance</div>
+    <div class="balance-amount" id="balance">0.00 USDT</div>
+
+    <div class="wallet-buttons">
+      <button class="btn secondary" id="withdrawBtn">Withdraw</button>
+      <button class="btn primary" id="rechargeBtn">Recharge</button>
+    </div>
+  </div>
+
+  <!-- summaries -->
+  <div class="section-title" data-type="Recharge">Recharge</div>
+  <div class="box-summary card" id="summaryRecharge">0 USDT</div>
+
+  <div class="section-title" data-type="Profit">Profit</div>
+  <div class="box-summary card" id="summaryProfit">0 USDT</div>
+
+  <div class="section-title" data-type="Withdraw">Withdraw</div>
+  <div class="box-summary card" id="summaryWithdraw">0 USDT</div>
+
+  <div class="section-title" data-type="Rent Product">Rent Product</div>
+  <div class="box-summary card" id="summaryRent">0 USDT</div>
+
+  <button class="logout-btn" id="logoutBtn">Cerrar sesión</button>
+</div>
+
+<!-- bottom nav -->
+<div class="bottom-bar">
+  <div class="bottom-item" onclick="location.href='dashboard.html'"><div class="icon"><i class="fa-solid fa-house"></i></div>Home</div>
+  <div class="bottom-item" onclick="location.href='invest.html'"><div class="icon"><i class="fa-solid fa-chart-line"></i></div>Invest</div>
+  <div class="bottom-item" onclick="location.href='equipo.html'"><div class="icon"><i class="fa-solid fa-users"></i></div>Equipo</div>
+  <div class="bottom-item active" onclick="location.href='wallet.html'"><div class="icon"><i class="fa-solid fa-wallet"></i></div>Wallet</div>
+  <div class="bottom-item" onclick="location.href='support.html'"><div class="icon"><i class="fa-solid fa-headset"></i></div>Support</div>
+</div>
+
+<!-- modal -->
+<div class="modal-bg" id="modalBG">
+  <div class="modal card">
+    <span class="close" id="modalClose">&times;</span>
+    <h3 id="modalTitle"></h3>
+    <div id="modalBody"></div>
+  </div>
+</div>
+
+<!-- notifications + loading -->
+<div id="notifContainer"></div>
+<div class="loading-box" id="loadingBox"><div class="spinner"></div><div id="loadingText">Cargando...</div></div>
+
+<!-- Firebase COMPAT (compatible con registro.html) -->
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+/* ================= CONFIG ================= */
+const firebaseConfig = {
+  apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+  authDomain: "clashgpt-8a055.firebaseapp.com",
+  projectId: "clashgpt-8a055",
+  storageBucket: "clashgpt-8a055.appspot.com",
+  messagingSenderId: "152687596916",
+  appId: "1:152687596916:web:8c8068c6d347d9d9198821"
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+/* ================= UI REFS ================= */
+const modalBG = document.getElementById("modalBG");
+const modalTitle = document.getElementById("modalTitle");
+const modalBody = document.getElementById("modalBody");
+const modalClose = document.getElementById("modalClose");
+const notifContainer = document.getElementById("notifContainer");
+const loadingBox = document.getElementById("loadingBox");
+const loadingText = document.getElementById("loadingText");
+
+function showNotification(msg, type='success', timeout=1600){
+  const box = document.createElement('div');
+  box.className = 'notif-box' + (type==='error'?' error':'');
+  box.textContent = msg;
+  notifContainer.appendChild(box);
+  setTimeout(()=> box.style.opacity = '0', timeout - 200);
+  setTimeout(()=> box.remove(), timeout + 200);
+}
+
+function showLoading(show=true, text='Cargando...'){
+  loadingText.textContent = text;
+  loadingBox.style.display = show ? 'flex' : 'none';
+}
+
+/* ================= AUTH & INIT ================= */
+let currentUser = null;
+
+auth.onAuthStateChanged(user=>{
+  if(!user){
+    window.location.href = 'login.html';
+    return;
+  }
+  currentUser = user;
+  initWallet(user.uid);
+  listenApprovedDeposits(user.uid);
+});
+
+function initWallet(uid){
+  // user doc snapshot
+  db.collection('users').doc(uid).onSnapshot(docSnap=>{
+    const d = docSnap.exists ? docSnap.data() : {};
+    document.getElementById('userName').textContent = d.username || (currentUser.displayName || 'Usuario');
+    document.getElementById('userID').textContent = d.inviteCode || "—";
+    document.getElementById('userVIP').textContent = "VIP " + (d.vip || 0);
+  });
+
+  // wallet info snapshot
+  db.collection('users').doc(uid).collection('wallet').doc('info')
+    .onSnapshot(wSnap=>{
+      const d = wSnap.exists ? wSnap.data() : { balance: 0, profit: 0 };
+      document.getElementById('balance').textContent = Number(d.balance||0).toFixed(2) + ' USDT';
+      // re-render summaries when wallet changes
+      renderSummaries(uid);
+    });
+
+  // vip modal
+  document.getElementById('userVIP').onclick = ()=>{
+    modalTitle.textContent = 'VIP Levels';
+    modalBody.innerHTML = `
+      <ul style="padding-left:18px; font-size:14px; color:#ccc;">
+      <li>VP0 → VP1: 5 usuarios en nivel 1</li>
+      <li>VP1 → VP2: 10 usuarios en nivel 1 y 5 usuarios en nivel 2</li>
+      <li>VP2 → VP3: 20 usuarios en nivel 1 y 10 usuarios en nivel 2</li>
+      <li>Miembros que superen VP3 pueden solicitar un sueldo fijo en gerencia.</li>
+      </ul>
+    `;
+    modalBG.style.display = 'flex';
+  };
+
+  modalClose.onclick = ()=> modalBG.style.display = 'none';
+  window.onclick = (e)=> { if(e.target == modalBG) modalBG.style.display = 'none'; };
+
+  // button navigations
+  document.getElementById('rechargeBtn').onclick = ()=> location.href='recharge.html';
+  document.getElementById('withdrawBtn').onclick = ()=> location.href='withdraw.html';
+}
+
+/* ================= TRANSACTIONS & SUMMARIES ================= */
+async function fetchTransactions(uid){
+  // returns array of transactions
+  try{
+    const snap = await db.collection('users').doc(uid).collection('transactions').get();
+    const arr = [];
+    snap.forEach(d => arr.push(Object.assign({id:d.id}, d.data())));
+    return arr;
+  }catch(e){
+    console.error('fetchTransactions error', e);
+    return [];
+  }
+}
+
+async function renderSummaries(uid){
+  showLoading(true,'Actualizando resúmenes...');
+  try{
+    const txs = await fetchTransactions(uid);
+
+    const profitTotal = txs.filter(t=>t.type==='Profit').reduce((a,b)=>a+(Number(b.amount)||0),0);
+    const rentTotal = txs.filter(t=>t.type==='Rent Product').reduce((a,b)=>a+(Number(b.amount)||0),0);
+    const rechargeTotal = txs.filter(t=>t.type==='Recharge').reduce((a,b)=>a+(Number(b.amount)||0),0);
+    const withdrawTotal = txs.filter(t=>t.type==='Withdraw').reduce((a,b)=>a+(Number(b.amount)||0),0);
+
+    document.getElementById('summaryProfit').textContent = profitTotal.toFixed(2) + ' USDT';
+    document.getElementById('summaryRent').textContent = rentTotal.toFixed(2) + ' USDT';
+    document.getElementById('summaryRecharge').textContent = rechargeTotal.toFixed(2) + ' USDT';
+    document.getElementById('summaryWithdraw').textContent = withdrawTotal.toFixed(2) + ' USDT';
+
+    // attach click handlers to show modal with list
+    const sections = ['Profit','Rent Product','Recharge','Withdraw'];
+    sections.forEach(type=>{
+      const el = document.querySelector(`.section-title[data-type="${type}"]`);
+      if(!el) return;
+      el.onclick = ()=>{
+        const filtered = txs.filter(t => t.type === type);
+        modalTitle.textContent = type + ' Transactions';
+        if(filtered.length === 0){
+          modalBody.innerHTML = "<div style='opacity:.6;padding:8px;font-size:14px'>No transactions</div>";
+        } else {
+          modalBody.innerHTML = filtered.map(t=>{
+            // if stored as Firestore Timestamp in compat, t.date is a Timestamp object
+            let dateStr = '';
+            if(t.date && t.date.toDate) dateStr = t.date.toDate().toISOString().split('T')[0];
+            else if(t.date) dateStr = (new Date(t.date)).toISOString().split('T')[0];
+            const sign = (Number(t.amount) > 0) ? '+' : '';
+            const cls = (Number(t.amount) > 0) ? 'green' : 'red';
+            return `<div class="item"><div>${dateStr}</div><div class="right ${cls}">${sign}${Number(t.amount||0).toFixed(2)} USDT</div></div>`;
+          }).join('');
+        }
+        modalBG.style.display = 'flex';
+      };
+    });
+
+  }catch(e){
+    console.error('renderSummaries error', e);
+    showNotification('Error al cargar resúmenes', 'error');
+  }finally{
+    showLoading(false);
+  }
+}
+
+/* ================= FETCH LIVE TRANSACTIONS (OPTIONAL) ================= */
+// If you want live updates too, you can uncomment a snapshot listener.
+// db.collection('users').doc(uid).collection('transactions').onSnapshot(...)
+
+/* ================= LOGOUT ================= */
+document.getElementById('logoutBtn').addEventListener('click', async ()=>{
+  try{
+    await auth.signOut();
+    window.location.href = 'login.html';
+  }catch(e){
+    console.error('Logout error', e);
+    showNotification('Error al cerrar sesión', 'error');
+  }
+});
+
+/* ================= small helpers ================= */
+// showNotification already defined earlier as function showNotification
+// but ensure it's available here (defensive)
+if(typeof showNotification !== 'function'){
+  function showNotification(msg,type='success',timeout=1400){
+    const box = document.createElement('div');
+    box.className = 'notif-box' + (type==='error'?' error':'');
+    box.textContent = msg;
+    document.body.appendChild(box);
+    setTimeout(()=> box.style.opacity='0', timeout - 200);
+    setTimeout(()=> box.remove(), timeout + 100);
+  }
+}
+/* ========= DEPÓSITOS APROBADOS AUTOMÁTICOS (SUMA UNA SOLA VEZ) ========= */
+function listenApprovedDeposits(uid) {
+  const depositRef = db.collection("depositos")
+    .where("usuario", "==", uid)
+    .where("estado", "==", "aprobado")
+    .where("sumado", "==", false);
+
+  depositRef.onSnapshot(async snap => {
+    for (const change of snap.docChanges()) {
+
+      // Solo procesar nuevos depósitos
+      if (change.type !== "added") continue;
+
+      const depDoc = change.doc;
+      const dep = depDoc.data();
+
+      // Seguridad extra
+      if (dep.sumado === true) continue;
+
+      const monto = Number(dep.monto || 0);
+      if (monto <= 0) continue;
+
+      const depID = depDoc.id;
+
+      try {
+
+        // 1. Sumar balance con transaction
+        await db.runTransaction(async tx => {
+          const walletRef = db.collection("users")
+            .doc(uid)
+            .collection("wallet")
+            .doc("info");
+
+          const walletSnap = await tx.get(walletRef);
+          const data = walletSnap.exists ? walletSnap.data() : { balance: 0 };
+
+          const nuevoBalance = Number(data.balance || 0) + monto;
+          tx.set(walletRef, { balance: nuevoBalance }, { merge: true });
+        });
+
+        // 2. Registrar transacción
+        await db.collection("users")
+          .doc(uid)
+          .collection("transactions")
+          .add({
+            type: "Recharge",
+            amount: monto,
+            date: new Date(),
+          });
+
+        // 3. Marcar como sumado
+        await db.collection("depositos").doc(depID).update({
+          sumado: true
+        });
+
+        // 4. Actualizar resumenes (solo desde aquí)
+        renderSummaries(uid);
+
+        showNotification(`Depósito sumado +${monto} USDT`);
+
+      } catch (err) {
+        console.error("Error procesando depósito:", err);
+        showNotification("Error procesando depósito", "error");
+      }
+    }
+  });
+}
+</script>
+</body>
+</html>
