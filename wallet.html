@@ -407,14 +407,11 @@ function listenApprovedDeposits(uid) {
 
   depositRef.onSnapshot(async snap => {
     for (const change of snap.docChanges()) {
-
-      // Solo procesar nuevos depósitos
       if (change.type !== "added") continue;
 
       const depDoc = change.doc;
       const dep = depDoc.data();
 
-      // Seguridad extra
       if (dep.sumado === true) continue;
 
       const monto = Number(dep.monto || 0);
@@ -423,8 +420,7 @@ function listenApprovedDeposits(uid) {
       const depID = depDoc.id;
 
       try {
-
-        // 1. Sumar balance con transaction
+        // 1️⃣ Sumar balance
         await db.runTransaction(async tx => {
           const walletRef = db.collection("users")
             .doc(uid)
@@ -438,7 +434,7 @@ function listenApprovedDeposits(uid) {
           tx.set(walletRef, { balance: nuevoBalance }, { merge: true });
         });
 
-        // 2. Registrar transacción
+        // 2️⃣ Registrar transacción
         await db.collection("users")
           .doc(uid)
           .collection("transactions")
@@ -448,14 +444,116 @@ function listenApprovedDeposits(uid) {
             date: new Date(),
           });
 
-        // 3. Marcar como sumado
-        await db.collection("depositos").doc(depID).update({
-          sumado: true
-        });
+        // 3️⃣ Marcar depósito como sumado
+        await db.collection("depositos").doc(depID).update({ sumado: true });
 
-        // 4. Actualizar resumenes (solo desde aquí)
+        // 4️⃣ Comisiones multinivel
+        const userSnap = await db.collection("users").doc(uid).get();
+        if (userSnap.exists) {
+          const userData = userSnap.data();
+
+          if (userData.invitedBy) {
+            // Nivel 1
+            const q1 = await db.collection("users")
+              .where("inviteCode", "==", userData.invitedBy)
+              .limit(1)
+              .get();
+
+            if (!q1.empty) {
+              const sponsor1 = q1.docs[0];
+              const sponsor1Uid = sponsor1.id;
+              const sponsor1Data = sponsor1.data();
+
+              const commission1 = monto * 0.10;
+
+              await db.collection("users").doc(sponsor1Uid)
+                .collection("wallet").doc("info")
+                .set({
+                  balance: firebase.firestore.FieldValue.increment(commission1)
+                }, { merge: true });
+
+              await db.collection("rewards").add({
+                toUid: sponsor1Uid,
+                fromUid: uid,
+                amount: commission1,
+                level: 1,
+                source: "Recharge",
+                depositId: depID,
+                createdAt: firebase.firestore.FieldValue.serverTimestamp()
+              });
+
+              // Nivel 2
+              if (sponsor1Data.invitedBy) {
+                const q2 = await db.collection("users")
+                  .where("inviteCode", "==", sponsor1Data.invitedBy)
+                  .limit(1)
+                  .get();
+
+                if (!q2.empty) {
+                  const sponsor2Uid = q2.docs[0].id;
+                  const commission2 = monto * 0.01;
+
+                  await db.collection("users").doc(sponsor2Uid)
+                    .collection("wallet").doc("info")
+                    .set({
+                      balance: firebase.firestore.FieldValue.increment(commission2)
+                    }, { merge: true });
+
+                  await db.collection("rewards").add({
+                    toUid: sponsor2Uid,
+                    fromUid: uid,
+                    amount: commission2,
+                    level: 2,
+                    source: "Recharge",
+                    depositId: depID,
+                    createdAt: firebase.firestore.FieldValue.serverTimestamp()
+                  });
+                }
+              }
+            }
+          }
+        }
+
+        // 5️⃣ Actualizar VP según referidos con depósitos
+        const userRef = db.collection('users').doc(uid);
+        const uSnap = await userRef.get();
+        if(uSnap.exists){
+          const data = uSnap.data();
+
+          // Nivel 1 con depósitos
+          const level1Snap = await db.collection('users')
+            .where('invitedBy','==',data.inviteCode)
+            .get();
+
+          let level1WithDeposit = 0;
+          for(const doc of level1Snap.docs){
+            if(doc.data().hasDeposit) level1WithDeposit++;
+          }
+
+          // Nivel 2 con depósitos
+          let level2WithDeposit = 0;
+          for(const doc of level1Snap.docs){
+            const u = doc.data();
+            if(!u.inviteCode) continue;
+            const l2Snap = await db.collection('users').where('invitedBy','==',u.inviteCode).get();
+            for(const d of l2Snap.docs){
+              if(d.data().hasDeposit) level2WithDeposit++;
+            }
+          }
+
+          let newVIP = data.vip || 0;
+          if(newVIP === 0 && level1WithDeposit >=5) newVIP = 1;
+          else if(newVIP === 1 && level1WithDeposit >=10 && level2WithDeposit >=5) newVIP = 2;
+          else if(newVIP === 2 && level1WithDeposit >=20 && level2WithDeposit >=10) newVIP = 3;
+
+          if(newVIP !== data.vip){
+            await userRef.update({ vip: newVIP });
+            showNotification(`¡Felicidades! Subiste a VIP ${newVIP}`);
+          }
+        }
+
+        // 6️⃣ Actualizar resumenes y UI
         renderSummaries(uid);
-
         showNotification(`Depósito sumado +${monto} USDT`);
 
       } catch (err) {
@@ -467,4 +565,4 @@ function listenApprovedDeposits(uid) {
 }
 </script>
 </body>
-</html>
+    </html>
