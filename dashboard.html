@@ -281,7 +281,7 @@ function initRealtimeListeners(uid) {
   const profileRef = doc(db, "users", uid, "profile", "info");
   if (profileListenerUnsub) profileListenerUnsub();
   profileListenerUnsub = onSnapshot(profileRef, (snap) => {
-    const data = snap.exists() ? snap.data() : { vip: 0 };
+    const data = snap.exists() ? snap.data() : { vpLevel: 0 };
     window._PROFILE = data;
   }, (err) => console.error("Profile listener:", err));
 }
@@ -309,11 +309,23 @@ function showLoading() {
 /* -------------------------
    Utility: map vip string (e.g. "vip1") to numeric level
    ------------------------- */
-function vipStringToLevel(vipStr){
-  if(!vipStr) return 0;
-  const m = String(vipStr).toLowerCase().match(/vip\s*(\d+)/) || String(vipStr).toLowerCase().match(/v?p\s*(\d+)/);
-  if(m && m[1]) return Number(m[1]);
-  if(!isNaN(Number(vipStr))) return Number(vipStr);
+function vipStringToLevel(vipStr) {
+  if (!vipStr) return 0;
+
+  const str = String(vipStr).toLowerCase().trim();
+
+  // Intentar VIP 3, vip3, vip 10
+  let m = str.match(/vip\s*(\d+)/);
+  if (m) return Number(m[1]);
+
+  // Intentar vp3, p3, v p 5, etc.
+  m = str.match(/v?p\s*(\d+)/);
+  if (m) return Number(m[1]);
+
+  // Si es solo un número: "3", "10", etc.
+  const num = Number(str);
+  if (!isNaN(num)) return num;
+
   return 0;
 }
 
@@ -419,9 +431,9 @@ function createCard(p, idx) {
     }
 
     // Verificar VP del usuario vs VP del plan
-    const userVipRaw = window._PROFILE ? window._PROFILE.vip : 0;
+    const userVipRaw = window._PROFILE ? window._PROFILE.vpLevel : 0;
     const userVipLevel = vipStringToLevel(userVipRaw);
-    const planVipLevel = vipStringToLevel(p.vip);
+    const planVipLevel = vipStringToLevel(p.vpLevel);
 
     if (userVipLevel < planVipLevel) {
       const modalBackdrop = document.getElementById('vpModalBackdrop');
