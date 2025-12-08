@@ -8,227 +8,36 @@
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
 <style>
-    body {
-        margin: 0;
-        background: #0d0d0f;
-        font-family: Arial, sans-serif;
-        color: white;
-    }
-
-    header {
-        width: 100%;
-        background: linear-gradient(180deg, #1a1a1f, #111114);
-        padding: 20px 0;
-        text-align: center;
-        border-bottom: 1px solid #222;
-        box-shadow: 0 4px 20px rgba(176, 98, 255, 0.15);
-        font-size: 22px;
-        font-weight: bold;
-    }
-
-    .team-container {
-        padding: 20px;
-        padding-bottom: 140px;
-    }
-
-    /* RESUMEN */
-    .summary-box {
-        background: #15151a;
-        border-radius: 16px;
-        padding: 20px;
-        border: 1px solid #252525;
-        margin-bottom: 25px;
-        box-shadow: 0 0 15px rgba(176, 98, 255, 0.08);
-    }
-
-    .summary-item {
-        font-size: 16px;
-        margin-bottom: 5px;
-    }
-
-    .ref-link-box {
-        margin-top: 15px;
-        padding: 12px;
-        background: #1a1a20;
-        border-radius: 10px;
-        border: 1px solid #333;
-        font-size: 14px;
-        word-wrap: break-word;
-    }
-
-    .copy-btn {
-        margin-top: 10px;
-        padding: 10px;
-        width: 100%;
-        background: #b062ff;
-        border: none;
-        border-radius: 10px;
-        color: white;
-        cursor: pointer;
-        font-size: 14px;
-    }
-
-    /* TARJETAS */
-    .card {
-        background: #15151a;
-        border-radius: 16px;
-        padding: 15px;
-        border: 1px solid #252525;
-        margin-bottom: 15px;
-        display: flex;
-        gap: 12px;
-        box-shadow: 0 0 15px rgba(176, 98, 255, 0.07);
-
-        /* Animación añadida */
-        opacity: 0;
-        transform: translateY(12px);
-        animation: fadeIn 0.4s ease forwards;
-    }
-
-    @keyframes fadeIn {
-        to {
-            opacity: 1;
-            transform: translateY(0);
-        }
-    }
-
-    .avatar {
-        width: 55px;
-        height: 55px;
-        border-radius: 50%;
-        object-fit: cover;
-        border: 2px solid #b062ff55;
-    }
-
-    .ref-info {
-        flex-grow: 1;
-    }
-
-    .ref-info div {
-        margin-bottom: 4px;
-    }
-
-    .ref-name {
-        font-size: 16px;
-        font-weight: bold;
-    }
-
-    .ref-vip {
-        font-size: 13px;
-        background: #b062ff33;
-        border: 1px solid #b062ff66;
-        padding: 2px 8px;
-        border-radius: 10px;
-        display: inline-block;
-        margin-top: 2px;
-    }
-
-    .ref-numbers {
-        margin-top: 8px;
-        font-size: 14px;
-    }
-
-    /* VP link */
-    .vp-link {
-        margin-top: 12px;
-        color: #b062ff;
-        font-weight: 600;
-        cursor: pointer;
-        display: inline-block;
-    }
-
-    /* modal */
-    .modal-backdrop {
-      position: fixed;
-      inset: 0;
-      background: rgba(0,0,0,0.6);
-      display: none;
-      align-items: center;
-      justify-content: center;
-      z-index: 9999;
-    }
-    .modal-backdrop.show { display:flex; }
-    .modal {
-      width: 92%;
-      max-width: 520px;
-      background: #0f0f12;
-      border: 1px solid #2a2a2a;
-      padding: 18px;
-      border-radius: 12px;
-      box-shadow: 0 12px 40px rgba(11,6,20,0.6);
-      color: #ddd;
-    }
-    .modal h3 { margin: 0 0 8px 0; color: #b062ff; }
-    .modal p { margin: 6px 0; line-height: 1.4; font-size: 14px; }
-    .modal .btn-close {
-      margin-top: 12px;
-      padding: 10px 12px;
-      background: #b062ff;
-      border: none;
-      color: white;
-      border-radius: 8px;
-      cursor: pointer;
-    }
-
-    /* BOTTOM MENU */
-    .bottom-bar {
-        position: fixed;
-        bottom: 0;
-        left: 0;
-        right: 0;
-        height: 78px;
-        background: #0c0c10;
-        border-top: 1px solid #1e1e1e;
-        display: flex;
-        justify-content: space-around;
-        padding-top: 8px;
-        z-index: 50;
-        box-shadow: 0 -4px 20px rgba(176, 98, 255, 0.08);
-    }
-
-    .bottom-item {
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        color: #777;
-        font-size: 12px;
-        cursor: pointer;
-    }
-
-    .bottom-item .icon {
-        font-size: 22px;
-        margin-bottom: 4px;
-    }
-
-    .bottom-item.active {
-        color: #b062ff;
-    }
-
-    .section-title { margin-top: 10px; margin-bottom:8px; color:#ccc; font-weight:700; }
-
-    /* ===========================
-       COPY TOAST (animación al copiar)
-       =========================== */
-    .copy-toast {
-        position: fixed;
-        bottom: 110px;
-        left: 50%;
-        transform: translateX(-50%) translateY(20px);
-        background: #b062ff;
-        color: white;
-        padding: 12px 20px;
-        border-radius: 12px;
-        font-size: 15px;
-        opacity: 0;
-        pointer-events: none;
-        box-shadow: 0 4px 14px rgba(176,98,255,0.4);
-        z-index: 999999;
-        transition: all .35s ease;
-    }
-    .copy-toast.show {
-        opacity: 1;
-        transform: translateX(-50%) translateY(0);
-    }
+body{margin:0;background:#0d0d0f;font-family:Arial,sans-serif;color:#fff}
+header{width:100%;background:linear-gradient(180deg,#1a1a1f,#111114);padding:20px 0;text-align:center;border-bottom:1px solid #222;box-shadow:0 4px 20px rgba(176,98,255,.15);font-size:22px;font-weight:bold}
+.team-container{padding:20px;padding-bottom:140px}
+.summary-box{background:#15151a;border-radius:16px;padding:20px;border:1px solid #252525;margin-bottom:25px;box-shadow:0 0 15px rgba(176,98,255,.08)}
+.summary-item{font-size:16px;margin-bottom:5px}
+.ref-link-box{margin-top:15px;padding:12px;background:#1a1a20;border-radius:10px;border:1px solid #333;font-size:14px;word-wrap:break-word}
+.copy-btn{margin-top:10px;padding:10px;width:100%;background:#b062ff;border:none;border-radius:10px;color:#fff;cursor:pointer;font-size:14px}
+.card{background:#15151a;border-radius:16px;padding:15px;border:1px solid #252525;margin-bottom:15px;display:flex;gap:12px;box-shadow:0 0 15px rgba(176,98,255,.07);opacity:0;transform:translateY(12px);animation:fadeIn .4s ease forwards;position:relative}
+@keyframes fadeIn{to{opacity:1;transform:translateY(0)}}
+.avatar{width:55px;height:55px;border-radius:50%;object-fit:cover;border:2px solid #b062ff55}
+.ref-info{flex-grow:1}
+.ref-info div{margin-bottom:4px}
+.ref-name{font-size:16px;font-weight:bold}
+.ref-vip{font-size:13px;background:#b062ff33;border:1px solid #b062ff66;padding:2px 8px;border-radius:10px;display:inline-block;margin-top:2px}
+.ref-numbers{margin-top:8px;font-size:14px}
+.vp-link{margin-top:12px;color:#b062ff;font-weight:600;cursor:pointer;display:inline-block}
+.approved-sticker{position:absolute;top:10px;right:10px;background:#b062ff;color:#fff;font-size:12px;font-weight:bold;padding:4px 6px;border-radius:8px;box-shadow:0 2px 6px rgba(176,98,255,.5)}
+.modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;z-index:9999}
+.modal-backdrop.show{display:flex}
+.modal{width:92%;max-width:520px;background:#0f0f12;border:1px solid #2a2a2a;padding:18px;border-radius:12px;box-shadow:0 12px 40px rgba(11,6,20,.6);color:#ddd}
+.modal h3{margin:0 0 8px;color:#b062ff}
+.modal p{margin:6px 0;line-height:1.4;font-size:14px}
+.modal .btn-close{margin-top:12px;padding:10px 12px;background:#b062ff;border:none;color:#fff;border-radius:8px;cursor:pointer}
+.bottom-bar{position:fixed;bottom:0;left:0;right:0;height:78px;background:#0c0c10;border-top:1px solid #1e1e1e;display:flex;justify-content:space-around;padding-top:8px;z-index:50;box-shadow:0 -4px 20px rgba(176,98,255,.08)}
+.bottom-item{display:flex;flex-direction:column;align-items:center;color:#777;font-size:12px;cursor:pointer}
+.bottom-item .icon{font-size:22px;margin-bottom:4px}
+.bottom-item.active{color:#b062ff}
+.section-title{margin-top:10px;margin-bottom:8px;color:#ccc;font-weight:700}
+.copy-toast{position:fixed;bottom:110px;left:50%;transform:translateX(-50%) translateY(20px);background:#b062ff;color:#fff;padding:12px 20px;border-radius:12px;font-size:15px;opacity:0;pointer-events:none;box-shadow:0 4px 14px rgba(176,98,255,.4);z-index:999999;transition:all .35s ease}
+.copy-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 </style>
 </head>
 
@@ -237,497 +46,150 @@
 <header>Mi Equipo</header>
 
 <div class="team-container">
+  <div class="summary-box">
+    <div class="summary-item">Total miembros: <span id="totalMembers">0</span></div>
+    <div class="summary-item">Ganancia total generada: <span id="totalEarnings">0 USDT</span></div>
+    <div class="ref-link-box" id="refLink"></div>
+    <button class="copy-btn" onclick="copyLink()">Copiar enlace</button>
+    <div class="vp-link" id="vpLink">Requisitos VP</div>
+  </div>
 
-    <!-- RESUMEN -->
-    <div class="summary-box">
-        <div class="summary-item">Total miembros: <span id="totalMembers">0</span></div>
-        <div class="summary-item">Ganancia total generada: <span id="totalEarnings">0 USDT</span></div>
+  <div class="section-title">Nivel 1 (directos)</div>
+  <div id="level1Container"></div>
 
-        <div class="ref-link-box" id="refLink"></div>
-        <button class="copy-btn" onclick="copyLink()">Copiar enlace</button>
-
-        <div class="vp-link" id="vpLink">Requisitos VP</div>
-
-        <!-- nota pequeñita -->
-        <div style="margin-top:10px; font-size:13px; color:#bfbfbf;">
-          <strong>Nota:</strong> Aquellos miembros que cumplan los requisitos de VP3 pueden solicitar un sueldo fijo en gerencia.
-        </div>
-    </div>
-
-    <!-- NIVEL 1 -->
-    <div class="section-title">Nivel 1 (directos)</div>
-    <div id="level1Container"></div>
-
-    <!-- NIVEL 2 -->
-    <div class="section-title">Nivel 2 (indirectos)</div>
-    <div id="level2Container"></div>
-
+  <div class="section-title">Nivel 2 (indirectos)</div>
+  <div id="level2Container"></div>
 </div>
 
-<!-- Modal VP -->
-<div id="vpModalBackdrop" class="modal-backdrop" aria-hidden="true">
-  <div class="modal" role="dialog" aria-modal="true">
+<!-- ✅ MODAL REQUISITOS VP -->
+<div class="modal-backdrop" id="vpModal">
+  <div class="modal">
     <h3>Requisitos VP</h3>
-    <p><strong>VP0 → VP1:</strong> 5 usuarios en nivel 1</p>
-    <p><strong>VP1 → VP2:</strong> 10 usuarios en nivel 1 y 5 usuarios en nivel 2</p>
-    <p><strong>VP2 → VP3:</strong> 20 usuarios en nivel 1 y 10 usuarios en nivel 2</p>
-    <p><strong>Miembros que superen VP3 pueden solicitar un sueldo fijo en gerencia.</strong></p>
-    <button id="closeVp" class="btn-close">Cerrar</button>
+    <p><strong>VP0 → VP1</strong><br>• 5 referidos Nivel 1</p>
+    <p><strong>VP1 → VP2</strong><br>• 10 referidos Nivel 1<br>• 5 referidos Nivel 2</p>
+    <p><strong>VP2 → VP3</strong><br>• 20 referidos Nivel 1<br>• 10 referidos Nivel 2</p>
+    <button class="btn-close" onclick="vpModal.classList.remove('show')">Cerrar</button>
   </div>
 </div>
 
-<!-- BOTTOM BAR -->
 <div class="bottom-bar">
-    <div class="bottom-item" onclick="location.href='dashboard.html'">
-        <div class="icon"><i class="fa-solid fa-house"></i></div>
-        Home
-    </div>
-
-    <div class="bottom-item" onclick="location.href='invest.html'">
-        <div class="icon"><i class="fa-solid fa-chart-line"></i></div>
-        Invest
-    </div>
-
-    <div class="bottom-item active" onclick="location.href='equipo.html'">
-        <div class="icon"><i class="fa-solid fa-users"></i></div>
-        Equipo
-    </div>
-
-    <div class="bottom-item" onclick="location.href='wallet.html'">
-        <div class="icon"><i class="fa-solid fa-wallet"></i></div>
-        Wallet
-    </div>
-
-    <div class="bottom-item" onclick="location.href='Support.html'">
-        <div class="icon"><i class="fa-solid fa-headset"></i></div>
-        Soporte
-    </div>
+  <div class="bottom-item" onclick="location.href='dashboard.html'"><div class="icon"><i class="fa-solid fa-house"></i></div>Home</div>
+  <div class="bottom-item" onclick="location.href='invest.html'"><div class="icon"><i class="fa-solid fa-chart-line"></i></div>Invest</div>
+  <div class="bottom-item active"><div class="icon"><i class="fa-solid fa-users"></i></div>Equipo</div>
+  <div class="bottom-item" onclick="location.href='wallet.html'"><div class="icon"><i class="fa-solid fa-wallet"></i></div>Wallet</div>
+  <div class="bottom-item" onclick="location.href='Support.html'"><div class="icon"><i class="fa-solid fa-headset"></i></div>Soporte</div>
 </div>
 
-<!-- Toast container -->
-<div id="copyToast" class="copy-toast" aria-hidden="true">✔ Enlace copiado</div>
+<div id="copyToast" class="copy-toast">✔ Enlace copiado</div>
 
-<!-- Firebase compat (funciona desde file:// y en Acode sin servidor) -->
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
 
 <script>
-/* ===========================
-   CONFIG FIREBASE (Firestore)
-   =========================== */
-// Usé storageBucket en formato appspot por compatibilidad
-const firebaseConfig = {
-  apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
-  authDomain: "clashgpt-8a055.firebaseapp.com",
-  projectId: "clashgpt-8a055",
-  storageBucket: "clashgpt-8a055.appspot.com",
-  messagingSenderId: "152687596916",
-  appId: "1:152687596916:web:8c8068c6d347d9d9198821"
-};
+firebase.initializeApp({
+  apiKey:"AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+  authDomain:"clashgpt-8a055.firebaseapp.com",
+  projectId:"clashgpt-8a055"
+});
+const auth=firebase.auth();
+const db=firebase.firestore();
 
-firebase.initializeApp(firebaseConfig);
-const auth = firebase.auth();
-const db = firebase.firestore();
+const money=n=>Number(n||0).toFixed(2)+" USDT";
+const avatar=s=>s&&s.length>5?s:"https://cdn-icons-png.flaticon.com/512/149/149071.png";
 
-/* ===========================
-   Helpers UI
-   =========================== */
-function getAvatar(src){ return src && src.length>5 ? src : "https://cdn-icons-png.flaticon.com/512/149/149071.png"; }
-function money(n){ return Number(n||0).toFixed(2) + " USDT"; }
+function copyLink(){
+  navigator.clipboard.writeText(refLink.textContent);
+  copyToast.classList.add("show");
+  setTimeout(()=>copyToast.classList.remove("show"),1200);
+}
 
-const level1Container = document.getElementById('level1Container');
-const level2Container = document.getElementById('level2Container');
-const totalMembersEl = document.getElementById('totalMembers');
-const totalEarningsEl = document.getElementById('totalEarnings');
-const refLinkBox = document.getElementById('refLink');
+/* ✅ abrir modal VP */
+vpLink.onclick=()=>vpModal.classList.add("show");
 
-let currentUser = null;
-let myDoc = null; // doc snapshot for current user
-let myInviteCode = null;
+let me=null,invite=null;
 
-/* ===========================
-   Modal VP
-   =========================== */
-const vpLink = document.getElementById('vpLink');
-const vpModal = document.getElementById('vpModalBackdrop');
-const closeVp = document.getElementById('closeVp');
-vpLink.addEventListener('click', ()=> vpModal.classList.add('show'));
-closeVp.addEventListener('click', ()=> vpModal.classList.remove('show'));
-vpModal.addEventListener('click', (e)=> { if(e.target===vpModal) vpModal.classList.remove('show'); });
-
-/* ===========================
-   Auth + carga inicial
-   =========================== */
-auth.onAuthStateChanged(async (user) => {
-  if(!user){
-    // si no está logueado, redirige al login
-    location.href = 'login.html';
-    return;
-  }
-  currentUser = user;
-  await loadMyData();
-  await renderTeam();
-  // escucha cambios en deposits para re-render automático
-  db.collection('deposits').onSnapshot(()=> renderTeam());
+auth.onAuthStateChanged(async u=>{
+  if(!u){location.href="login.html";return;}
+  me=u;
+  const m=await db.collection("users").doc(u.uid).get();
+  invite=m.data().inviteCode;
+  refLink.textContent=`${location.origin}/invite.html?ref=${invite}`;
+  render();
 });
 
-/* ===========================
-   Cargar doc del usuario actual
-   =========================== */
-async function loadMyData(){
-  const uid = currentUser.uid;
-  const docRef = db.collection('users').doc(uid);
-  const snap = await docRef.get();
-  if(!snap.exists){
-    // si no hay doc, crear uno básico con inviteCode único
-    const newCode = await generateUniqueInvite();
-    await docRef.set({
-      username: currentUser.displayName || ("user-" + uid.slice(0,6)),
-      email: currentUser.email || null,
-      balance: 0,
-      inviteCode: newCode,
-      invitedBy: null,
-      vp: 0,
-      level1Count: 0,
-      level2Count: 0,
-      createdAt: firebase.firestore.FieldValue.serverTimestamp()
-    }, { merge: true });
-    myDoc = await docRef.get();
-  } else {
-    myDoc = snap;
-    if(!myDoc.data().inviteCode){
-      const newCode = await generateUniqueInvite();
-      await docRef.set({ inviteCode: newCode }, { merge: true });
-      myDoc = await docRef.get();
-    }
-  }
-  myInviteCode = myDoc.data().inviteCode;
-  refLinkBox.textContent = `${location.origin}/invite.html?ref=${myInviteCode}`;
-}
+async function render(){
+  level1Container.innerHTML="";
+  level2Container.innerHTML="";
+  let total=0,earn=0;
 
-/* ===========================
-   Copiar link (con animación toast)
-   =========================== */
-function copyLink(){
-  const text = refLinkBox.textContent || '';
-  navigator.clipboard.writeText(text).then(()=>{
-    // show toast
-    const t = document.getElementById('copyToast');
-    t.classList.add('show');
-    t.setAttribute('aria-hidden','false');
-    setTimeout(()=>{
-      t.classList.remove('show');
-      t.setAttribute('aria-hidden','true');
-    }, 1200);
-  }).catch(()=>{
-    // fallback: still show error message in toast
-    const t = document.getElementById('copyToast');
-    t.textContent = 'No se pudo copiar';
-    t.classList.add('show');
-    t.setAttribute('aria-hidden','false');
-    setTimeout(()=>{
-      t.textContent = '✔ Enlace copiado';
-      t.classList.remove('show');
-      t.setAttribute('aria-hidden','true');
-    }, 1400);
+  const rewardsSnap=await db.collection("rewards")
+    .where("toUid","==",me.uid).get();
+
+  const byUser={};
+  rewardsSnap.forEach(d=>{
+    const r=d.data();
+    byUser[r.fromUid]=(byUser[r.fromUid]||0)+Number(r.amount||0);
+    earn+=Number(r.amount||0);
   });
-}
 
-/* ===========================
-   GENERAR CÓDIGO ÚNICO
-   =========================== */
-function generateInviteCode(){
-  const chars = 'ABCDEFGHJKMNPQRSTUVWXYZ23456789';
-  let code = '';
-  for(let i=0;i<6;i++) code += chars.charAt(Math.floor(Math.random()*chars.length));
-  return code;
-}
-
-async function generateUniqueInvite(){
-  for(let attempt=0; attempt<8; attempt++){
-    const c = generateInviteCode();
-    const q = await db.collection('users').where('inviteCode','==',c).limit(1).get();
-    if(q.empty) return c;
-  }
-  return 'ID' + Date.now().toString(36).toUpperCase().slice(-6);
-}
-
-/* ===========================
-   Helper global: sumar depósitos por uid
-   (lo usamos en renderTeam y recomputeUserVP)
-   =========================== */
-async function sumDepositsByUid(uid){
-  const s = await db.collection('deposits').where('uid','==',uid).get();
-  let sum = 0;
-  s.forEach(doc => { const d = doc.data(); sum += (d.amount || 0); });
-  return sum;
-}
-
-/* ===========================
-   RENDER TEAM (nivel1 y nivel2)
-   - ahora VP cuenta solo si referido tiene depositos > 0
-   =========================== */
-async function renderTeam(){
-  level1Container.innerHTML = '';
-  level2Container.innerHTML = '';
-  totalMembersEl.textContent = '0';
-  totalEarningsEl.textContent = money(0);
-
-  if(!myInviteCode) return;
-
-  // 1) Buscar nivel 1: usuarios cuyo invitedBy == myInviteCode
-  const q1 = await db.collection('users').where('invitedBy','==', myInviteCode).get();
-  const level1Users = q1.docs.map(d => ({ uid: d.id, ...d.data() }));
-
-  // 2) Para nivel 2: buscar usuarios cuyo invitedBy sea cualquiera de los inviteCodes de level1
-  const level1InviteCodes = level1Users.map(u => u.inviteCode).filter(Boolean);
-  let level2Users = [];
-  if(level1InviteCodes.length){
-    // Firestore 'in' supports up to 10; batch if needed
-    const batches = [];
-    while(level1InviteCodes.length) batches.push(level1InviteCodes.splice(0,10));
-    for(const b of batches){
-      const q2 = await db.collection('users').where('invitedBy','in', b).get();
-      level2Users = level2Users.concat(q2.docs.map(d=>({ uid:d.id, ...d.data() })));
-    }
-  }
-
-  // 3) Calcular depósitos y comisiones por cada referido
-  let totalMembers = level1Users.length + level2Users.length;
-  let totalEarnings = 0;
-
-  // Contadores VP basados en referidos con depósito
-  let vpLevel1Count = 0;
-  let vpLevel2Count = 0;
-
-  // Render level1
-  for(let i=0;i<level1Users.length;i++){
-    const u = level1Users[i];
-    const deposited = await sumDepositsByUid(u.uid);
-    // solo cuentan para VP si deposited > 0
-    if(deposited > 0) vpLevel1Count++;
-
-    const commission = deposited * 0.10; // 10% nivel1
-    totalEarnings += commission;
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.animationDelay = `${i * 0.06}s`;
-    card.innerHTML = `
-      <img class="avatar" src="${getAvatar(u.avatar||'')}" />
+  // Nivel 1
+  const q1=await db.collection("users").where("invitedBy","==",invite).get();
+  total+=q1.size;
+  for(const d of q1.docs){
+    const u=d.data();
+    const g=byUser[d.id]||0;
+    const approved=g>0 ? '<div class="approved-sticker">✔ Aprobado</div>' : '';
+    level1Container.innerHTML+=`
+    <div class="card">
+      <img class="avatar" src="${avatar(u.avatar)}">
       <div class="ref-info">
-        <div class="ref-name">${u.username || (u.email || u.uid)}</div>
+        <div class="ref-name">${u.username||u.email}</div>
         <div class="ref-vip">Nivel 1</div>
-        <div class="ref-numbers">
-          Ganancia generada: <strong style="color:#4fe36a">${money(commission)}</strong><br>
-          Fondos actuales: <strong style="color:#b062ff">${money(deposited)}</strong>
-        </div>
+        <div class="ref-numbers">Ganancia generada:
+        <strong style="color:#4fe36a">${money(g)}</strong></div>
       </div>
-    `;
-    level1Container.appendChild(card);
+      ${approved}
+    </div>`;
   }
 
-  // Render level2
-  for(let i=0;i<level2Users.length;i++){
-    const u = level2Users[i];
-    const deposited = await sumDepositsByUid(u.uid);
-    // solo cuentan para VP si deposited > 0
-    if(deposited > 0) vpLevel2Count++;
-
-    const commission = deposited * 0.01; // 1% nivel2
-    totalEarnings += commission;
-
-    const card = document.createElement('div');
-    card.className = 'card';
-    card.style.animationDelay = `${i * 0.06}s`;
-    card.innerHTML = `
-      <img class="avatar" src="${getAvatar(u.avatar||'')}" />
+  // Nivel 2 (indirectos)
+  const q2=await db.collection("users").where("invitedBy","in",q1.docs.map(d=>d.data().inviteCode)).get();
+  for(const d of q2.docs){
+    const u=d.data();
+    const g=byUser[d.id]||0;
+    const approved=g>0 ? '<div class="approved-sticker">✔ Aprobado</div>' : '';
+    level2Container.innerHTML+=`
+    <div class="card">
+      <img class="avatar" src="${avatar(u.avatar)}">
       <div class="ref-info">
-        <div class="ref-name">${u.username || (u.email || u.uid)}</div>
+        <div class="ref-name">${u.username||u.email}</div>
         <div class="ref-vip">Nivel 2</div>
-        <div class="ref-numbers">
-          Ganancia generada: <strong style="color:#4fe36a">${money(commission)}</strong><br>
-          Fondos actuales: <strong style="color:#b062ff">${money(deposited)}</strong>
-        </div>
+        <div class="ref-numbers">Ganancia generada:
+        <strong style="color:#4fe36a">${money(g)}</strong></div>
       </div>
-    `;
-    level2Container.appendChild(card);
+      ${approved}
+    </div>`;
   }
 
-  // 4) Mostrar totales (totales visibles siguen siendo todos los miembros)
-  totalMembersEl.textContent = totalMembers;
-  totalEarningsEl.textContent = money(totalEarnings);
+  totalMembers.textContent=total;
+  totalEarnings.textContent=money(earn);
 
-  // 5) Actualizar conteos VP en mi doc y vp level -> PASAMOS los conteos basados en depositos
-  await updateVPCountsAndStatus(vpLevel1Count, vpLevel2Count);
+  // ✅ actualizar VP
+  await updateVP();
 }
 
-/* ===========================
-   ACTUALIZAR VP SEGUN REGLAS
-   (la función queda igual, recibe counts)
-   =========================== */
-async function updateVPCountsAndStatus(level1Count, level2Count){
-  const uid = currentUser.uid;
-  let newVp = 0;
-  if(level1Count >= 20 && level2Count >= 10) newVp = 3;
-  else if(level1Count >= 10 && level2Count >= 5) newVp = 2;
-  else if(level1Count >= 5) newVp = 1;
-  else newVp = 0;
+async function updateVP(){
+  let nivel1Aprob = level1Container.querySelectorAll('.approved-sticker').length;
+  let nivel2Aprob = level2Container.querySelectorAll('.approved-sticker').length;
+  let vp = 0;
 
-  // Update if changed
-  const userRef = db.collection('users').doc(uid);
-  const snap = await userRef.get();
-  const data = snap.exists ? snap.data() : {};
-  const updates = {};
-  if(data.level1Count !== level1Count) updates.level1Count = level1Count;
-  if(data.level2Count !== level2Count) updates.level2Count = level2Count;
-  if(data.vp !== newVp) updates.vp = newVp;
-  if(Object.keys(updates).length) await userRef.set(updates, { merge: true });
+  if(nivel1Aprob >= 5) vp = 1;
+  if(nivel1Aprob >= 10 && nivel2Aprob >= 5) vp = 2;
+  if(nivel1Aprob >= 20 && nivel2Aprob >= 10) vp = 3;
+
+  await db.collection("users").doc(me.uid).update({ vpLevel: vp });
 }
-
-/* ===========================
-   PROCESAR DEPOSITO (función util)
-   - agrega depósito
-   - acredita comisiones a level1 (10%) y level2 (1%)
-   - guarda logs en "rewards" y actualiza balances con transacción
-   =========================== */
-async function addDeposit(invitedUid, amount){
-  // invitedUid: uid del usuario que hace el depósito
-  // amount: número
-
-  if(!invitedUid || !amount || amount <= 0) throw new Error('Parámetros inválidos');
-
-  const batch = db.batch();
-
-  // 1) crear documento deposito
-  const depRef = db.collection('deposits').doc();
-  batch.set(depRef, {
-    uid: invitedUid,
-    amount: Number(amount),
-    timestamp: firebase.firestore.FieldValue.serverTimestamp()
-  });
-
-  // 2) Leer invited user para encontrar su invitedBy (inviteCode used)
-  const invitedSnap = await db.collection('users').doc(invitedUid).get();
-  if(!invitedSnap.exists) throw new Error('Usuario invitado no encontrado');
-  const invitedData = invitedSnap.data();
-  const invitedByCode = invitedData.invitedBy || null;
-
-  // 3) Encontrar usuario level1 (el dueño del inviteCode)
-  let level1User = null;
-  if(invitedByCode){
-    const q = await db.collection('users').where('inviteCode','==', invitedByCode).limit(1).get();
-    if(!q.empty) level1User = { uid: q.docs[0].id, ...q.docs[0].data() };
-  }
-
-  // 4) Encontrar usuario level2 (si existe: quien invitó al level1)
-  let level2User = null;
-  if(level1User && level1User.invitedBy){
-    const q2 = await db.collection('users').where('inviteCode','==', level1User.invitedBy).limit(1).get();
-    if(!q2.empty) level2User = { uid: q2.docs[0].id, ...q2.docs[0].data() };
-  }
-
-  // 5) Montar writes: actualizar balances con transacción para evitar race
-  // level1 commission
-  if(level1User){
-    const commission1 = Number(amount) * 0.10;
-    const l1Ref = db.collection('users').doc(level1User.uid);
-    // update balance and write reward log
-    batch.set(db.collection('rewards').doc(), {
-      toUid: level1User.uid,
-      fromUid: invitedUid,
-      amount: commission1,
-      level: 1,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    batch.update(l1Ref, { balance: firebase.firestore.FieldValue.increment(commission1) });
-  }
-
-  // level2 commission
-  if(level2User){
-    const commission2 = Number(amount) * 0.01;
-    const l2Ref = db.collection('users').doc(level2User.uid);
-    batch.set(db.collection('rewards').doc(), {
-      toUid: level2User.uid,
-      fromUid: invitedUid,
-      amount: commission2,
-      level: 2,
-      timestamp: firebase.firestore.FieldValue.serverTimestamp()
-    });
-    batch.update(l2Ref, { balance: firebase.firestore.FieldValue.increment(commission2) });
-  }
-
-  // 6) Commit batch
-  await batch.commit();
-
-  // 7) Opcional: actualizar conteos VP para afectados (los referentes)
-  if(level1User) await recomputeUserVP(level1User.uid);
-  if(level2User) await recomputeUserVP(level2User.uid);
-
-  // 8) Re-render UI
-  await renderTeam();
-}
-
-/* ===========================
-   RECOMPUTAR VP de un usuario (si cambió su equipo)
-   -> ahora cuenta sólo los referidos que tienen depósito
-   =========================== */
-async function recomputeUserVP(userUid){
-  const snap = await db.collection('users').doc(userUid).get();
-  if(!snap.exists) return;
-  const userData = snap.data();
-  const myInvite = userData.inviteCode;
-  const q1 = await db.collection('users').where('invitedBy','==', myInvite).get();
-
-  // contar level1 activos (solo con depósito)
-  let level1Count = 0;
-  const l1Docs = q1.docs;
-  for(const d of l1Docs){
-    const uid = d.id;
-    const deposited = await sumDepositsByUid(uid);
-    if(deposited > 0) level1Count++;
-  }
-
-  // buscar level2 (invitados por cada inviteCode de level1)
-  const l1InviteCodes = q1.docs.map(d=>d.data().inviteCode).filter(Boolean);
-  let level2Count = 0;
-  if(l1InviteCodes.length){
-    const batches = [];
-    while(l1InviteCodes.length) batches.push(l1InviteCodes.splice(0,10));
-    for(const b of batches){
-      const q2 = await db.collection('users').where('invitedBy','in', b).get();
-      for(const d2 of q2.docs){
-        const uid2 = d2.id;
-        const deposited2 = await sumDepositsByUid(uid2);
-        if(deposited2 > 0) level2Count++;
-      }
-    }
-  }
-
-  // aplicar reglas
-  let newVp = 0;
-  if(level1Count >= 20 && level2Count >= 10) newVp = 3;
-  else if(level1Count >= 10 && level2Count >= 5) newVp = 2;
-  else if(level1Count >= 5) newVp = 1;
-  else newVp = 0;
-
-  await db.collection('users').doc(userUid).set({
-    level1Count,
-    level2Count,
-    vp: newVp
-  }, { merge: true });
-}
-
-/* ===========================
-   UTIL: función para desarrollo -> simula depósito
-   Puedes llamar en consola:
-   addDeposit('INVITADO_UID', 50)
-   para probar.
-   =========================== */
-window.addDeposit = addDeposit; // expongo para probar desde consola
-
 </script>
-
 </body>
 </html>
