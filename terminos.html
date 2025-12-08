@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Términos y Condiciones — ClashGPT</title>
+<link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@500;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --morado:#7d2bff;
+  --morado-2:#b062ff;
+  --fondo-oscuro:#06060a;
+  --texto:#eae6ff;
+  --btn-gradient: linear-gradient(90deg,var(--morado),var(--morado-2));
+  --glow-color: rgba(125,43,255,0.35);
+}
+html, body{
+  margin:0;
+  height:100%;
+  font-family: 'Orbitron', sans-serif;
+  background: var(--fondo-oscuro);
+  color: var(--texto);
+  overflow:hidden;
+}
+canvas#bgCanvas{
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  z-index:-3;
+}
+.wrap{
+  position:relative;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:20px;
+}
+.card{
+  position:relative;
+  width:100%;
+  max-width:900px;
+  background: linear-gradient(180deg, rgba(18,9,23,0.95), rgba(12,7,16,0.98));
+  border-radius:25px;
+  padding:60px 50px;
+  box-shadow: 0 15px 50px var(--glow-color);
+  border:1px solid rgba(125,43,255,0.08);
+  backdrop-filter: blur(12px);
+  overflow:auto;
+  max-height:90vh;
+  text-align:center;
+}
+.card::before, .card::after{
+  content:"";
+  position:absolute;
+  width:200px;
+  height:200px;
+  border-radius:50%;
+  filter:blur(80px);
+  pointer-events:none;
+}
+.card::before{
+  top:-60px;
+  left:-60px;
+  background: radial-gradient(circle, rgba(125,43,255,0.3), transparent 60%);
+}
+.card::after{
+  bottom:-60px;
+  right:-60px;
+  background: radial-gradient(circle, rgba(176,98,255,0.25), transparent 60%);
+}
+h1{
+  font-size:52px;
+  margin-bottom:40px;
+  color: var(--morado-2);
+  text-shadow: 0 0 12px var(--morado), 0 0 30px var(--morado-2), 0 0 60px rgba(176,98,255,0.4);
+  animation: flicker 3s infinite;
+}
+@keyframes flicker{
+  0%,19%,21%,23%,25%,54%,56%,100%{opacity:1;}
+  20%,22%,24%,55%{opacity:0.7;}
+}
+p, li{
+  font-size:18px;
+  line-height:1.8;
+  margin-bottom:15px;
+  color: var(--texto);
+  max-width:800px;
+  margin-left:auto;
+  margin-right:auto;
+}
+ul{
+  text-align:left;
+  padding-left:25px;
+  margin-bottom:30px;
+}
+.btn{
+  display:inline-block;
+  padding:18px 32px;
+  border:none;
+  border-radius:15px;
+  font-size:20px;
+  font-weight:700;
+  background: var(--btn-gradient);
+  color:white;
+  text-decoration:none;
+  box-shadow: 0 0 25px var(--glow-color), 0 0 60px var(--glow-color);
+  transition: all 0.3s ease;
+}
+.btn:hover{
+  transform: translateY(-3px);
+  box-shadow: 0 0 50px var(--glow-color), 0 0 100px var(--glow-color);
+}
+@media(max-width:600px){
+  h1{font-size:36px;}
+  p, li{font-size:16px;}
+  .card{padding:40px 25px;}
+}
+</style>
+</head>
+<body>
+<canvas id="bgCanvas"></canvas>
+<div class="wrap">
+  <div class="card">
+    <h1>Términos y Condiciones — ClashGPT</h1>
+    <p>Bienvenido a ClashGPT. Antes de utilizar nuestra plataforma de automatización y operaciones financieras, es imprescindible que leas y aceptes los siguientes términos y condiciones.</p>
+    <ul>
+      <li><strong>Riesgo financiero:</strong> Todas las operaciones implican riesgos. El usuario asume la total responsabilidad de sus decisiones de inversión.</li>
+      <li><strong>Uso de la plataforma:</strong> ClashGPT proporciona herramientas automatizadas y asesoramiento, pero no garantiza ganancias.</li>
+      <li><strong>Registro y seguridad:</strong> El usuario es responsable de mantener sus credenciales seguras y confidenciales.</li>
+      <li><strong>Depósitos y retiros:</strong> Los fondos deben ser manejados conforme a las políticas de la plataforma. ClashGPT no se hace responsable por errores en transacciones externas.</li>
+      <li><strong>Privacidad:</strong> La información del usuario se recopila y almacena de acuerdo con nuestra política de privacidad.</li>
+      <li><strong>Referencias e invitaciones:</strong> El sistema de referidos debe usarse honestamente; cualquier abuso puede resultar en suspensión de cuenta.</li>
+      <li><strong>Limitación de responsabilidad:</strong> ClashGPT no se hace responsable de pérdidas, daños directos o indirectos derivados del uso de la plataforma.</li>
+      <li><strong>Modificaciones:</strong> La plataforma puede actualizar términos, funcionalidades y políticas sin previo aviso. Es responsabilidad del usuario revisar periódicamente los términos.</li>
+      <li><strong>Cumplimiento legal:</strong> El usuario garantiza cumplir con leyes locales y regulaciones aplicables.</li>
+      <li><strong>Terminación:</strong> ClashGPT puede suspender o eliminar cuentas que incumplan estos términos sin notificación previa.</li>
+    </ul>
+    <a href="registro.html" class="btn">Ir al Registro</a>
+  </div>
+</div>
+
+<script>
+// Partículas interactivas para fondo
+const canvas = document.getElementById('bgCanvas');
+const ctx = canvas.getContext('2d');
+let w = canvas.width = window.innerWidth;
+let h = canvas.height = window.innerHeight;
+let particles = [];
+
+window.addEventListener('resize', ()=>{
+  w = canvas.width = window.innerWidth;
+  h = canvas.height = window.innerHeight;
+});
+
+class Particle {
+  constructor(){
+    this.x = Math.random()*w;
+    this.y = Math.random()*h;
+    this.size = Math.random()*2 +1;
+    this.speedX = (Math.random()-0.5)*0.5;
+    this.speedY = (Math.random()-0.5)*0.5;
+  }
+  update(){
+    this.x += this.speedX;
+    this.y += this.speedY;
+    if(this.x<0 || this.x>w) this.speedX*=-1;
+    if(this.y<0 || this.y>h) this.speedY*=-1;
+  }
+  draw(){
+    ctx.beginPath();
+    ctx.arc(this.x,this.y,this.size,0,Math.PI*2);
+    ctx.fillStyle="rgba(125,43,255,0.5)";
+    ctx.fill();
+  }
+}
+
+for(let i=0;i<150;i++) particles.push(new Particle());
+
+let mouse = {x:w/2,y:h/2};
+window.addEventListener('mousemove', e=>{mouse.x=e.clientX; mouse.y=e.clientY;});
+
+function animate(){
+  ctx.clearRect(0,0,w,h);
+  particles.forEach(p=>{
+    p.update();
+    // Partículas reaccionan suavemente al mouse
+    let dx = mouse.x - p.x;
+    let dy = mouse.y - p.y;
+    let dist = Math.sqrt(dx*dx + dy*dy);
+    if(dist<120){
+      p.x -= dx*0.002;
+      p.y -= dy*0.002;
+    }
+    p.draw();
+  });
+  requestAnimationFrame(animate);
+}
+animate();
+</script>
+</body>
+</html>
