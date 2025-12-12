@@ -148,12 +148,49 @@ header{
   .balance-amount{ font-size:26px; }
   .bottom-bar{ height:84px; padding-top:12px; }
 }
+
+.ruleta-btn {
+  width:50px;
+  height:50px;
+  border-radius:50%;
+  border:none;
+  background: linear-gradient(135deg,#b44bff,#c56cff);
+  color:white;
+  font-size:24px;
+  cursor:pointer;
+  box-shadow:0 4px 12px #b44bff55;
+  animation: float 2s ease-in-out infinite alternate;
+  transition: transform .2s, background .3s, filter .3s;
+}
+.ruleta-btn:hover {
+  transform: translateY(-4px) scale(1.1);
+  filter: brightness(1.2);
+}
+.ruleta-btn.disabled {
+  background: #333;
+  cursor: not-allowed;
+  filter: grayscale(100%);
+  pointer-events: none;
+}
+@keyframes float {
+  0% { transform: translateY(0); }
+  100% { transform: translateY(-6px); }
+}
+
 </style>
 </head>
 <body>
 
 <header>My Wallet</header>
 <div class="wallet-container">
+  
+ <!-- Botón Ruleta -->
+<div id="ruleta-container" style="position:fixed; top:18px; right:18px; z-index:100; display:flex; flex-direction:column; align-items:center;">
+  <button id="btnRuleta" class="ruleta-btn">
+    🎰
+  </button>
+  <span id="ruletaCountdown" style="color:var(--accent); font-size:12px; margin-top:4px;">Cargando...</span>
+</div>
 
   <!-- user -->
   <div class="user-box card">
@@ -563,6 +600,62 @@ function listenApprovedDeposits(uid) {
     }
   });
 }
+
+// Inicializar cuenta regresiva Ruleta
+const ruletaBtn = document.getElementById('btnRuleta');
+const ruletaCountdown = document.getElementById('ruletaCountdown');
+
+function initRuletaCountdown(uid) {
+  const ruletaRef = db.collection('users').doc(uid).collection('features').doc('ruleta');
+
+  ruletaRef.get().then(docSnap => {
+    let endTime;
+    if (docSnap.exists) {
+      const data = docSnap.data();
+      if (data.endTime) endTime = data.endTime.toDate ? data.endTime.toDate() : new Date(data.endTime);
+    }
+
+    if (!endTime) {
+      // Si no existe, crear 5 días desde ahora
+      endTime = new Date(Date.now() + 5*24*60*60*1000);
+      ruletaRef.set({ endTime: endTime }, { merge: true });
+    }
+
+    // Actualizar countdown cada segundo
+    const interval = setInterval(()=>{
+      const now = new Date();
+      const diff = endTime - now;
+      if (diff <= 0) {
+        ruletaCountdown.textContent = "Expirado";
+        ruletaBtn.classList.add('disabled');
+        clearInterval(interval);
+      } else {
+        const days = Math.floor(diff / (1000*60*60*24));
+        const hours = Math.floor((diff % (1000*60*60*24))/(1000*60*60));
+        const mins = Math.floor((diff % (1000*60*60))/(1000*60));
+        const secs = Math.floor((diff % (1000*60))/1000);
+        ruletaCountdown.textContent = `${days}d ${hours}h ${mins}m ${secs}s`;
+      }
+    },1000);
+
+    // click
+    ruletaBtn.onclick = ()=>{
+      if (ruletaBtn.classList.contains('disabled')) return;
+      window.location.href = 'ruleta.html';
+    };
+
+  }).catch(err=>{
+    console.error("Error cargando ruleta:", err);
+    ruletaCountdown.textContent = "Error";
+    ruletaBtn.classList.add('disabled');
+  });
+}
+
+// Llamar cuando auth está listo
+auth.onAuthStateChanged(user=>{
+  if(user) initRuletaCountdown(user.uid);
+});
+
 </script>
 </body>
-</html>
+  </html>
