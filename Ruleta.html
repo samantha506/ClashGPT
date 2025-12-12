@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Ruleta Casino</title>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg1:#0b0011;
+  --bg2:#150026;
+  --accent:#b892ff;
+  --accent-2:#7a4bff;
+  --muted:#5a4a69;
+  --glass: rgba(255,255,255,0.03);
+  --arrow-color: #b892ff;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  min-height:100vh;
+  font-family:"Poppins",system-ui,Arial;
+  background: radial-gradient(ellipse at center, #160018 0%, #0a0010 40%, #050006 100%);
+  color: #fff;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  padding:18px 12px 36px;
+}
+h1{
+  margin:6px 0 8px;
+  font-size:26px;
+  font-weight:800;
+  text-align:center;
+  background: linear-gradient(90deg, #b892ff, #7a4bff, #e0b3ff);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  text-shadow:
+    0 0 8px rgba(120,60,200,0.6),
+    0 0 16px rgba(180,80,255,0.5),
+    0 4px 12px rgba(0,0,0,0.3);
+  letter-spacing: 1px;
+
+  /* Animación de flotación */
+  animation: floatTitle 3s ease-in-out infinite;
+}
+
+@keyframes floatTitle {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-12px); } /* sube suavemente */
+}
+.wheel-wrap{
+  width:320px;
+  max-width:86vw;
+  position:relative;
+  margin-top:12px;
+}
+canvas#ruleta {
+  width: 100%;
+  display: block;
+  border-radius: 50%;
+  box-shadow:
+    0 10px 40px rgba(0,0,0,0.6),
+    inset 0 0 35px rgba(180,80,255,0.2),
+    0 0 50px rgba(120,60,200,0.3);
+  background: radial-gradient(circle at 50% 50%, #1b001f 0%, #0a0010 50%, #000000 100%);
+}
+.arrow{
+  position:absolute;
+  left:50%;
+  transform:translateX(-50%);
+  bottom:-18px;
+  width:28px;
+  height:60px;
+  pointer-events:none;
+}
+.arrow:before{
+  content:'';
+  display:block;
+  width:0;
+  height:0;
+  border-left:14px solid transparent;
+  border-right:14px solid transparent;
+  border-bottom:40px solid var(--arrow-color);
+  filter: drop-shadow(0 4px 12px rgba(180,150,255,0.5));
+}
+.controls{
+  width:320px;
+  max-width:86vw;
+  margin-top:18px;
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+  align-items:stretch;
+}
+.btn{
+  border-radius:14px;
+  padding:14px 18px;
+  font-size:16px;
+  font-weight:700;
+  text-align:center;
+  background: linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
+  border:1px solid rgba(255,255,255,0.03);
+  color: #ddd;
+  cursor:pointer;
+  backdrop-filter: blur(6px);
+  box-shadow: 0 6px 24px rgba(30,10,40,0.35);
+}
+.btn.primary{
+  background: linear-gradient(180deg, rgba(120,60,200,0.14), rgba(90,30,160,0.12));
+  color: #fff;
+  border:1px solid rgba(180,140,255,0.12);
+}
+.btn:disabled{
+  opacity:0.42;
+  cursor:not-allowed;
+  color: #b9aee1;
+  background: linear-gradient(180deg, rgba(0,0,0,0.25), rgba(0,0,0,0.2));
+  border:1px solid rgba(255,255,255,0.02);
+  box-shadow:none;
+}
+.ganancias{
+  margin-top:28px;
+  width:100%;
+  max-width:420px;
+  border-radius:18px;
+  padding:18px;
+  text-align:center;
+  font-weight:700;
+  font-size:18px;
+  color:#fff;
+  background: linear-gradient(180deg, rgba(120,60,200,0.18), rgba(60,10,100,0.12));
+  box-shadow: 0 10px 40px rgba(120,60,200,0.22), inset 0 0 40px rgba(255,255,255,0.02);
+  border:1px solid rgba(180,140,255,0.08);
+}
+#mensaje{
+  margin-top:12px;
+  min-height:22px;
+  color: #e8dfff;
+  text-align:center;
+  font-weight:600;
+  text-shadow:0 4px 14px rgba(100,40,180,0.08);
+}
+.row{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:8px;
+  font-size:13px;
+  color:var(--muted);
+  margin-top:10px;
+  width:320px;
+  max-width:86vw;
+}
+.chip{
+  background:var(--glass);
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,0.03);
+  color:#d9ccff;
+  font-weight:600;
+  box-shadow:inset 0 -6px 18px rgba(10,0,20,0.2);
+}
+@media (max-width:420px){
+  .arrow{width:20px;height:48px}
+  .btn{padding:12px;font-size:15px;border-radius:12px}
+  .ganancias{font-size:16px;padding:14px;border-radius:14px}
+}
+
+body {
+  overflow: hidden; /* necesario para que las estrellas no se salgan */
+  position: relative;
+}
+
+/* Canvas para fondo de estrellas */
+#bgStars {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: -1; /* queda detrás de todo */
+  pointer-events: none; /* para que no interfiera con clicks */
+}
+
+</style>
+</head>
+<body>
+  
+ <!-- Fondo animado -->
+<canvas id="bgStars"></canvas>
+  
+<h1>Evento Clash <span style="font-weight:600;color:transparent">.</span></h1>
+
+<div class="wheel-wrap">
+  <canvas id="ruleta" width="500" height="500"></canvas>
+  <div class="arrow"></div>
+</div>
+
+<div class="controls">
+  <button id="btnComprar" class="btn primary">Comprar Giro (1.5 USDT)</button>
+  <button id="btnGratis" class="btn">Giro Gratis (<span id="freeSpinsCounter">0</span>)</button>
+  <button id="btnReclamar" class="btn">Reclamar Ganancia</button>
+</div>
+
+<div id="mensaje"></div>
+
+<div class="ganancias">
+  Ganancias acumuladas: <span id="gananciasAcumuladas">0</span> USDT
+</div>
+
+<div class="row">
+  <div class="chip">Balance: <span id="balanceText">0.00 USDT</span></div>
+  <div class="chip">Giros gratis: <span id="gs">0</span></div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+
+<script>
+const firebaseConfig = {
+  apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
+  authDomain: "clashgpt-8a055.firebaseapp.com",
+  projectId: "clashgpt-8a055",
+};
+firebase.initializeApp(firebaseConfig);
+const auth = firebase.auth();
+const db = firebase.firestore();
+
+const canvas = document.getElementById('ruleta');
+const ctx = canvas.getContext('2d');
+
+const segmentos = Array(16).fill('?'); 
+const premiosValidos = [
+  {value:"0.01"},
+  {value:"0.1"},
+  {value:"1"},
+  {value:"Roja"},
+  {value:"Verde"}
+];
+
+let ang = 0;
+let girando = false;
+let autoSpins = 0;
+let currentUser = null;
+
+let state = { balance:0, freeSpins:0, pending:0, knownApprovedReferrals:0 };
+
+const btnComprar = document.getElementById('btnComprar');
+const btnGratis = document.getElementById('btnGratis');
+const btnReclamar = document.getElementById('btnReclamar');
+const freeSpinsCounter = document.getElementById('freeSpinsCounter');
+const gananciasSpan = document.getElementById('gananciasAcumuladas');
+const mensaje = document.getElementById('mensaje');
+const balanceText = document.getElementById('balanceText');
+const gs = document.getElementById('gs');
+
+function renderState(){
+  freeSpinsCounter.textContent = state.freeSpins;
+  gananciasSpan.textContent = state.pending.toFixed(2);
+  balanceText.textContent = state.balance.toFixed(2) + ' USDT';
+  gs.textContent = state.freeSpins;
+  btnComprar.disabled = girando || (state.balance < 1.5);
+  btnGratis.disabled = girando || (state.freeSpins <= 0);
+  btnReclamar.disabled = girando || (state.pending <= 0);
+}
+
+function dibujarRuleta(rot=0){
+  const w = canvas.width, h = canvas.height;
+  const cx = w/2, cy = h/2, r = Math.min(w,h)/2 - 6;
+  ctx.clearRect(0,0,w,h);
+
+  // Dibujar fondo galáctico con estrellas pequeñas
+  const starCount = 80;
+  for(let i=0;i<starCount;i++){
+    const sx = cx + (Math.random()*r*2 - r);
+    const sy = cy + (Math.random()*r*2 - r);
+    const dist = Math.sqrt((sx-cx)**2 + (sy-cy)**2);
+    if(dist < r){
+      ctx.beginPath();
+      ctx.arc(sx, sy, Math.random()*1.2, 0, 2*Math.PI);
+      ctx.fillStyle = `rgba(255,255,255,${Math.random()*0.4 + 0.1})`;
+      ctx.fill();
+    }
+  }
+
+  const total = segmentos.length;
+  const arco = 2*Math.PI/total;
+
+  for(let i=0;i<total;i++){
+    const start = i*arco + rot;
+    const end = start + arco;
+    ctx.beginPath();
+    ctx.moveTo(cx,cy);
+    ctx.arc(cx,cy,r,start,end);
+    ctx.closePath();
+
+    // Alternar colores morado / negro profundo
+    ctx.fillStyle = i%2 === 0 
+      ? 'rgba(90,30,160,0.85)' 
+      : 'rgba(20,0,40,0.85)';
+    ctx.fill();
+
+    ctx.strokeStyle = 'rgba(180,140,255,0.08)';
+    ctx.lineWidth = 1;
+    ctx.stroke();
+
+    // Texto del segmento
+    ctx.save();
+    ctx.translate(cx,cy);
+    ctx.rotate(start + arco/2);
+    ctx.fillStyle = "#fff";
+    ctx.font = "bold 16px Poppins";
+    ctx.textAlign = "right";
+    ctx.fillText(segmentos[i], r - 14, 8);
+    ctx.restore();
+  }
+
+  // Borde externo brillante
+  ctx.beginPath();
+  ctx.arc(cx,cy,r+2,0,Math.PI*2);
+  ctx.strokeStyle = "rgba(180,80,255,0.15)";
+  ctx.lineWidth = 6;
+  ctx.stroke();
+
+  // Resplandor central tipo nebulosa
+  const grad = ctx.createRadialGradient(cx, cy, 0, cx, cy, r/2);
+  grad.addColorStop(0, 'rgba(180,80,255,0.25)');
+  grad.addColorStop(1, 'rgba(0,0,0,0)');
+  ctx.fillStyle = grad;
+  ctx.beginPath();
+  ctx.arc(cx,cy,r,0,Math.PI*2);
+  ctx.fill();
+}
+
+dibujarRuleta(ang);
+
+let msgTimeout;
+function showMsg(txt, ms=1400){
+  clearTimeout(msgTimeout);
+  mensaje.textContent = txt;
+  msgTimeout = setTimeout(()=> mensaje.textContent = '', ms);
+}
+
+function easeOut(t,b,c,d){ t/=d; return -c*t*(t-2)+b; }
+
+async function updateBalance(newBalance){
+  state.balance = newBalance;
+  renderState();
+  if(!currentUser) return;
+  await db.collection('users').doc(currentUser.uid)
+          .collection('wallet').doc('info')
+          .set({ balance: state.balance, freeSpins: state.freeSpins }, { merge:true });
+}
+
+function spinToPrize(prizeObj){
+  if(girando) return;
+  girando = true;
+  renderState();
+  if(!prizeObj){
+    prizeObj = premiosValidos[Math.floor(Math.random()*premiosValidos.length)];
+  }
+  const total = premiosValidos.length;
+  const arco = 2*Math.PI / total;
+  const index = premiosValidos.indexOf(prizeObj);
+  const objetivo = (3*Math.PI/2) - (index*arco + arco/2);
+  const vueltas = 4 + Math.random()*2;
+  const destino = objetivo + vueltas*2*Math.PI;
+  const dur = 3200;
+  const inicio = ang;
+  let startTime = null;
+
+  function step(ts){
+    if(!startTime) startTime = ts;
+    let elapsed = ts - startTime;
+    if(elapsed > dur) elapsed = dur;
+    ang = easeOut(elapsed, inicio, destino - inicio, dur);
+    dibujarRuleta(ang);
+    if(elapsed < dur) requestAnimationFrame(step);
+    else {
+      girando = false;
+      renderState();
+      handleResult(prizeObj);
+    }
+  }
+  requestAnimationFrame(step);
+}
+
+async function handleResult(resObj){
+  const res = resObj.value;
+  if(res === "Roja"){
+    showMsg("❌ No ganaste.");
+    return;
+  }
+  if(res === "Verde"){
+    state.freeSpins++;
+    renderState();
+    if(autoSpins < 3){
+      autoSpins++;
+      showMsg("🟢 Verde! Giro adicional...");
+      setTimeout(()=> spinToPrize(), 700);
+      return;
+    }
+    autoSpins = 0;
+    showMsg("🟢 Verde - fin de auto giros");
+    return;
+  }
+  const win = Number(res);
+  state.pending = Number((state.pending + win).toFixed(8));
+  renderState();
+  if(currentUser){
+    await db.collection('users').doc(currentUser.uid)
+            .collection('transactions')
+            .add({ type: "Ruleta", amount: win, date: new Date() });
+  }
+  showMsg("🎉 Ganaste " + win + " USDT");
+}
+
+btnComprar.addEventListener('click', async ()=>{
+  if(girando) return;
+  if(state.balance < 1.5){ showMsg("⚠️ Saldo insuficiente"); return; }
+  await updateBalance(Number((state.balance - 1.5).toFixed(8)));
+  showMsg("🔄 Giro comprado");
+  setTimeout(()=> spinToPrize(), 260);
+});
+
+btnGratis.addEventListener('click', ()=>{
+  if(girando) return;
+  if(state.freeSpins <= 0){ showMsg("⚠️ No tienes giros gratis"); return; }
+  state.freeSpins--;
+  updateBalance(state.balance);
+  renderState();
+  showMsg("🎁 Usaste un giro gratis");
+  setTimeout(()=> spinToPrize(), 260);
+});
+
+btnReclamar.addEventListener('click', async ()=>{
+  if(girando) return;
+  if(state.pending <= 0){ showMsg("⚠️ No tienes ganancias"); return; }
+  await updateBalance(Number((state.balance + state.pending).toFixed(8)));
+  state.pending = 0;
+  renderState();
+  showMsg("💎 Ganancias añadidas al balance");
+});
+
+// --- Giros por referidos aprobados ---
+async function syncReferrals() {
+  if(!currentUser) return;
+
+  const userDoc = await db.collection('users').doc(currentUser.uid).get();
+  const inviteCode = userDoc.data().inviteCode;
+
+  const level1Snap = await db.collection('users').where("invitedBy","==",inviteCode).get();
+  const level1Ids = level1Snap.docs.map(d => d.id);
+
+  if(level1Ids.length === 0) return;
+
+  const rewardsSnap = await db.collection('rewards')
+    .where("toUid","==",currentUser.uid).get();
+
+  const byUser = {};
+  rewardsSnap.forEach(d => {
+    const r = d.data();
+    byUser[r.fromUid] = (byUser[r.fromUid] || 0) + Number(r.amount || 0);
+  });
+
+  let approvedCount = 0;
+  for(const uid of level1Ids){
+    if((byUser[uid]||0) > 0) approvedCount++;
+  }
+
+  const nuevos = approvedCount - (state.knownApprovedReferrals || 0);
+  if(nuevos > 0){
+    state.freeSpins += nuevos;
+    showMsg(`🎁 +${nuevos} giros gratis por referidos aprobados`);
+    renderState();
+
+    state.knownApprovedReferrals = approvedCount;
+    await db.collection('users').doc(currentUser.uid).collection('wallet').doc('info')
+      .set({ knownApprovedReferrals: approvedCount, freeSpins: state.freeSpins }, { merge:true });
+  }
+}
+
+// --- Inicialización ---
+auth.onAuthStateChanged(async user=>{
+  if(!user) { window.location.href='login.html'; return; }
+  currentUser = user;
+
+  const walletRef = db.collection('users').doc(user.uid).collection('wallet').doc('info');
+  const walletSnap = await walletRef.get();
+
+  if(walletSnap.exists){
+    const d = walletSnap.data();
+    state.balance = Number(d.balance || 0);
+    state.pending = 0;
+
+    if (!('initialSpinGiven' in d) || !d.initialSpinGiven){
+      state.freeSpins = 1;
+      await walletRef.set({ initialSpinGiven:true, freeSpins:1 }, { merge:true });
+    } else {
+      state.freeSpins = Number(d.freeSpins || 0);
+    }
+
+    state.knownApprovedReferrals = Number(d.knownApprovedReferrals || 0);
+    renderState();
+
+  } else {
+    // ⚡ Nuevo usuario sin wallet/info → crear doc y dar giro gratis
+    state.balance = 0;
+    state.pending = 0;
+    state.freeSpins = 1;
+    state.knownApprovedReferrals = 0;
+
+    await walletRef.set({ balance:0, pending:0, freeSpins:1, initialSpinGiven:true, knownApprovedReferrals:0 });
+    renderState();
+  }
+
+  // Revisar referidos aprobados y refrescar cada 20s
+  await syncReferrals();
+  setInterval(syncReferrals, 20000);
+});
+
+const starCanvas = document.getElementById('bgStars');
+const starCtx = starCanvas.getContext('2d');
+let stars = [];
+
+function resizeCanvas() { 
+  starCanvas.width = window.innerWidth; 
+  starCanvas.height = window.innerHeight; 
+}
+window.addEventListener('resize', resizeCanvas);
+resizeCanvas();
+
+// Crear 250 estrellas
+for(let i = 0; i < 250; i++){
+  stars.push({
+    x: Math.random() * starCanvas.width,
+    y: Math.random() * starCanvas.height,
+    r: Math.random() * 1.5 + 0.3,
+    dx: (Math.random() - 0.5) * 0.2,
+    dy: (Math.random() - 0.5) * 0.2,
+    alpha: Math.random()
+  });
+}
+
+// Animar estrellas
+function drawStars(){
+  starCtx.clearRect(0, 0, starCanvas.width, starCanvas.height);
+  for(let s of stars){
+    s.x += s.dx; 
+    s.y += s.dy;
+    s.alpha += (Math.random() - 0.5) * 0.02;
+    if(s.alpha < 0) s.alpha = 0; 
+    if(s.alpha > 1) s.alpha = 1;
+    if(s.x < 0) s.x = starCanvas.width; 
+    if(s.x > starCanvas.width) s.x = 0;
+    if(s.y < 0) s.y = starCanvas.height; 
+    if(s.y > starCanvas.height) s.y = 0;
+
+    starCtx.beginPath();
+    starCtx.arc(s.x, s.y, s.r, 0, 2 * Math.PI);
+    starCtx.fillStyle = `rgba(255,255,255,${s.alpha})`;
+    starCtx.fill();
+  }
+  requestAnimationFrame(drawStars);
+}
+drawStars();
+
+</script>
+</body>
+                               </html>
