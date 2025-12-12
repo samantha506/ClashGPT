@@ -26,7 +26,7 @@
 *{box-sizing:border-box;}
 body{
   margin:0;
-  font-family:Inter, system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  font-family:Inter, system-ui;
   background: linear-gradient(180deg,var(--bg) 0%, #07020b 100%);
   color: var(--text);
   min-height:100vh;
@@ -137,7 +137,7 @@ button:hover{
 }
 .notif-box.error{ background: var(--error); }
 
-/* Modal (Grande) */
+/* Modal */
 .modal-bg{ 
   position:fixed; inset:0; 
   background:rgba(0,0,0,0.7); 
@@ -165,7 +165,7 @@ button:hover{
   margin-top:0;
 }
 
-/* Popup pequeño futurista */
+/* Popup pequeño */
 .small-popup-bg {
   position: fixed;
   inset: 0;
@@ -241,8 +241,8 @@ button:hover{
   <div class="note">
     <strong>Horario permitido:</strong><br>
     ➤ 6:00 AM – 11:00 AM (Hora Londres) <br>
-    ➤ Lunes a Viernes<br>
-    ➤ Monto mínimo: <strong>10 USDT</strong> <br>
+    ➤ Todos los días<br>
+    ➤ Monto mínimo: <strong>5 USDT</strong> <br>
     ➤ Solo 1 retiro diario
   </div>
 
@@ -259,6 +259,10 @@ button:hover{
   <label for="amount">Monto (USDT)</label>
   <input type="number" id="amount" placeholder="Ej: 50">
 
+  <!-- NUEVA CASILLA DE CONTRASEÑA -->
+  <label for="password">Confirmar contraseña</label>
+  <input type="password" id="password" placeholder="Tu contraseña">
+
   <div class="note" id="noteFee">
     <strong>Comisión:</strong> <span id="fee">0</span> USDT <br>
     <strong>Monto final:</strong> <span id="final">0</span> USDT
@@ -267,15 +271,15 @@ button:hover{
   <button id="withdrawBtn">Retirar</button>
 </div>
 
-<!-- Modal grande -->
+<!-- Modal -->
 <div class="modal-bg" id="modalBG">
   <div class="modal">
     <h3>Retiro en Proceso</h3>
-    <p>Su solicitud de retiro ha sido registrada correctamente y será procesada en un plazo máximo de 48 horas hábiles.</p>
+    <p>Su solicitud ha sido registrada y será procesada en un máximo de 48 horas hábiles.</p>
   </div>
 </div>
 
-<!-- Popup pequeño -->
+<!-- Small popup -->
 <div class="small-popup-bg" id="smallPopupBg">
   <div class="small-popup">
     <h4 id="smallPopupTitle">Aviso</h4>
@@ -289,10 +293,14 @@ button:hover{
 /* =========  FIREBASE  ========= */
 import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-app.js";
 import {
-  getFirestore, collection, addDoc, query, where, getDocs,
-  doc, runTransaction, setDoc, serverTimestamp, limit
+  getFirestore, collection, query, where, getDocs,
+  doc, runTransaction, serverTimestamp, limit
 } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-firestore.js";
-import { getAuth, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
+
+import {
+  getAuth, onAuthStateChanged,
+  EmailAuthProvider, reauthenticateWithCredential
+} from "https://www.gstatic.com/firebasejs/10.12.4/firebase-auth.js";
 
 const firebaseConfig = {
   apiKey: "AIzaSyB0JbG_AXXOveg1lERODRJ8xw5vAtEMzV4",
@@ -307,15 +315,14 @@ initializeApp(firebaseConfig);
 const db = getFirestore();
 const auth = getAuth();
 
-/* ========= UI ELEMENTOS ========= */
+/* ========= UI ========= */
 const amountInput = document.getElementById("amount");
 const feeBox = document.getElementById("fee");
 const finalBox = document.getElementById("final");
 const withdrawBtn = document.getElementById("withdrawBtn");
-const modalBG = document.getElementById("modalBG");
 const londonClock = document.getElementById("londonClock");
 
-/* ========= POPUP PEQUEÑO ========= */
+/* ========= POPUPS ========= */
 window.showSmallPopup = function(title, text){
   document.getElementById("smallPopupTitle").textContent = title;
   document.getElementById("smallPopupText").textContent = text;
@@ -351,7 +358,7 @@ function updateLondonClock() {
 setInterval(updateLondonClock, 1000);
 updateLondonClock();
 
-/* ========= Cálculo de comisión ========= */
+/* ========= Cálculo comisión ========= */
 amountInput.addEventListener("input", ()=>{
   const amount = parseFloat(amountInput.value);
   if(isNaN(amount) || amount<=0){
@@ -370,7 +377,7 @@ function isValidAddress(address, network){
     return /^0x[a-fA-F0-9]{40}$/.test(address);
 
   if(network === "trc20")
-    return /^T[1-9A-HJ-NP-Za-km-z]{33}$/.test(address);
+    return /^T[1-9A-HJ-NP-Za-km-z]{33,34}$/.test(address);
 
   return false;
 }
@@ -392,23 +399,22 @@ function londonDateISO() {
   return `${year}-${month}-${day}`;
 }
 
-/* ========= Horario Londres 6AM-11AM, Lunes-Viernes ========= */
+/* ========= Horario Londres ========= */
 function isLondonTimeAllowed() {
   const now = new Date();
-  const options = { timeZone: "Europe/London", hour12: false, hour: "2-digit", minute: "2-digit", second: "2-digit", weekday: "short" };
-  const parts = new Intl.DateTimeFormat("en-GB", options).formatToParts(now);
+  const parts = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/London",
+    hour12: false,
+    hour: "2-digit",
+    minute: "2-digit"
+  }).formatToParts(now);
 
   const hour = parseInt(parts.find(p => p.type === "hour").value);
   const minute = parseInt(parts.find(p => p.type === "minute").value);
-  const weekday = parts.find(p => p.type === "weekday").value; // Mon, Tue, ..., Sat, Sun
 
-  // Revisar fines de semana
-  if(weekday === "Sat" || weekday === "Sun") return false;
-
-  // Revisar horario 6AM - 11AM
   const nowMinutes = hour * 60 + minute;
-  const openMinutes = 6 * 60;   // 6:00 AM
-  const closeMinutes = 11 * 60; // 11:00 AM
+  const openMinutes = 6 * 60;
+  const closeMinutes = 11 * 60;
 
   return nowMinutes >= openMinutes && nowMinutes < closeMinutes;
 }
@@ -427,9 +433,10 @@ onAuthStateChanged(auth, async user=>{
     const network = document.getElementById("network").value;
     const address = document.getElementById("address").value.trim();
     const amount = parseFloat(amountInput.value);
+    const password = document.getElementById("password").value.trim();
 
-    if(!network || !address || !amount){
-      showSmallPopup("Campos incompletos","Debe completar todos los datos.");
+    if(!network || !address || !amount || !password){
+      showSmallPopup("Campos incompletos","Debe completar todos los datos, incluyendo la contraseña.");
       return;
     }
 
@@ -438,16 +445,13 @@ onAuthStateChanged(auth, async user=>{
       return;
     }
 
-    if(amount < 10){
-      showSmallPopup("Monto inválido","El monto mínimo es de 10 USDT.");
-      return;
-    }
+    if(amount < 5){
+  showSmallPopup("Monto inválido","El monto mínimo es de 5 USDT.");
+  return;
+}
 
     if(!isLondonTimeAllowed()){
-      showSmallPopup(
-        "No Disponible",
-        "Los retiros solo están habilitados de 6:00 AM a 11:00 AM (Londres), de lunes a viernes."
-      );
+      showSmallPopup("No Disponible","Los retiros solo están habilitados de 6:00 AM a 11:00 AM (Londres).");
       return;
     }
 
@@ -465,10 +469,21 @@ onAuthStateChanged(auth, async user=>{
       return;
     }
 
+    /* ========= VERIFICAR CONTRASEÑA ========= */
+    try {
+      const credential = EmailAuthProvider.credential(user.email, password);
+      await reauthenticateWithCredential(user, credential);
+    } catch (err) {
+      showSmallPopup("Contraseña incorrecta", "La contraseña ingresada no es válida.");
+      return;
+    }
+
     const fee = amount < 99 ? 1 : amount * 0.05;
     const finalAmount = amount - fee;
 
     try{
+      withdrawBtn.disabled = true;
+
       await runTransaction(db, async(tx)=>{
 
         const walletRef = doc(db, "users", uid, "wallet", "info");
@@ -479,12 +494,11 @@ onAuthStateChanged(auth, async user=>{
         const currentBalance = Number(walletSnap.data().balance || 0);
         if(amount > currentBalance) throw new Error("Saldo insuficiente");
 
-        // 1️⃣ Actualizar balance
         tx.set(walletRef, { balance: currentBalance - amount }, { merge:true });
 
-        // 2️⃣ Crear documento en withdraw (colección global)
         const newId = crypto.randomUUID();
         const retiroRef = doc(db, "withdraw", newId);
+
         tx.set(retiroRef, {
           uid,
           amount,
@@ -497,7 +511,6 @@ onAuthStateChanged(auth, async user=>{
           dayKey: today
         });
 
-        // 3️⃣ Crear transacción en la colección del usuario
         const transRef = doc(collection(db, "users", uid, "transactions"));
         tx.set(transRef, {
           type: "Withdraw",
@@ -512,6 +525,7 @@ onAuthStateChanged(auth, async user=>{
 
       amountInput.value='';
       document.getElementById("address").value='';
+      document.getElementById("password").value='';
       feeBox.textContent='0';
       finalBox.textContent='0';
 
@@ -522,10 +536,12 @@ onAuthStateChanged(auth, async user=>{
 
     }catch(err){
       showSmallPopup("Error", err.message || "Error al procesar el retiro");
+    } finally {
+      withdrawBtn.disabled = false;
     }
 
   });
 });
 </script>
 </body>
-</html>
+  </html>
