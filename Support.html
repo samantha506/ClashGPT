@@ -4,203 +4,125 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Support</title>
+<link rel="stylesheet" href="style.css">
 <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
 
 <style>
-/* ============================================================
-   TEMA FUTURISTA MORADO / NEÓN
-============================================================ */
-body {
-  font-family: 'Arial', sans-serif;
-  background: radial-gradient(circle at top, #1a0029, #0a0014, #000);
-  color: #e3d8ff;
-  margin: 0;
-  padding-bottom: 60px;
-}
+  body {
+    font-family: 'Arial', sans-serif;
+    background: #000; /* Fondo negro */
+    color: #fff;
+    margin: 0;
+    padding-bottom: 40px;
+  }
 
-/* TÍTULO PRINCIPAL */
-h1 {
-  text-align: center;
-  margin-top: 35px;
-  font-size: 2.6rem;
-  color: #b765ff;
-  font-weight: bold;
-  text-shadow: 0 0 20px rgba(183, 101, 255, 0.8);
-  letter-spacing: 1px;
-}
+  h1 {
+    text-align: center;
+    margin-top: 30px;
+    font-size: 2rem;
+    color: #9b4d96; /* Morado fluorescente */
+  }
 
-/* ANIMACIÓN FLOTE MEJORADA */
-.icon-anim {
-  display: inline-block;
-  animation: float 3s ease-in-out infinite;
-  color: #c08aff;
-}
+  .support-container {
+    max-width: 500px;
+    margin: 40px auto 80px auto;
+    background: rgba(255, 255, 255, 0.05); /* Fondo transparente */
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.1); /* Sombra suave */
+    backdrop-filter: blur(5px); /* Difuminado para un look moderno */
+    border: 2px solid #9b4d96; /* Borde morado fluorescente */
+  }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0px) rotate(0deg); }
-  50% { transform: translateY(-10px) rotate(3deg); }
-}
+  ul {
+    list-style: none;
+    padding: 0;
+    margin-bottom: 30px;
+  }
 
-/* CONTENEDOR */
-.support-container {
-  max-width: 520px;
-  margin: 40px auto 80px auto;
-  padding: 35px;
-  border-radius: 22px;
+  ul li {
+    margin: 15px 0;
+    font-size: 1.1rem;
+  }
 
-  background: rgba(132, 42, 255, 0.08);
-  backdrop-filter: blur(10px);
+  ul li a {
+    color: #9b4d96; /* Morado fluorescente para los enlaces */
+    text-decoration: none;
+    transition: 0.3s;
+  }
 
-  border: 1px solid rgba(168, 80, 255, 0.25);
-  box-shadow: 0 0 25px rgba(162, 55, 255, 0.25);
+  ul li a:hover {
+    color: #fff;
+    text-shadow: 0 0 5px #9b4d96, 0 0 10px #9b4d96; /* Efecto de resplandor morado al pasar el ratón */
+  }
 
-  animation: fadeIn 0.8s ease;
-}
+  form input, form textarea {
+    width: 100%;
+    padding: 12px;
+    margin: 8px 0;
+    border-radius: 10px;
+    border: none;
+    outline: none;
+    background: rgba(255,255,255,0.1); /* Fondo oscuro para los inputs */
+    color: #fff;
+    font-size: 1rem;
+  }
 
-@keyframes fadeIn {
-  from { opacity: 0; transform: translateY(20px); }
-  to   { opacity: 1; transform: translateY(0); }
-}
+  form button {
+    width: 100%;
+    padding: 12px;
+    margin-top: 12px;
+    border-radius: 10px;
+    border: none;
+    background: #9b4d96; /* Morado fluorescente para el botón */
+    color: #111;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.3s;
+  }
 
-/* CONTACTOS */
-ul {
-  list-style: none;
-  padding: 0;
-  margin-bottom: 30px;
-}
+  form button:hover {
+    background: #a855f7; /* Tono morado más brillante al pasar el ratón */
+  }
 
-ul li {
-  margin: 16px 0;
-  font-size: 1.15rem;
-  display: flex;
-  align-items: center;
-  color: #e3d8ff;
-}
+  .icon-anim {
+    display: inline-block;
+    animation: bounce 2s infinite;
+    color: #9b4d96; /* Iconos en morado fluorescente */
+    margin-right: 8px;
+  }
 
-ul li i {
-  margin-right: 12px;
-  font-size: 1.3rem;
-  color: #ba72ff;
-  text-shadow: 0 0 10px rgba(197, 115, 255, 0.7);
-}
+  @keyframes bounce {
+    0%, 100% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+  }
 
-ul li a {
-  color: #ca9aff;
-  text-decoration: none;
-  transition: 0.3s;
-}
+  .futuristic-icon {
+    font-size: 1.5rem;
+    color: #9b4d96; /* Iconos en morado fluorescente */
+    transition: transform 0.3s ease-in-out;
+  }
 
-ul li a:hover {
-  color: #fff;
-  text-shadow: 0 0 10px #ca9aff;
-}
-
-/* FORMULARIO */
-h2 {
-  margin-top: 10px;
-  font-size: 1.6rem;
-  color: #d6b2ff;
-  text-shadow: 0 0 10px rgba(192, 115, 255, 0.5);
-}
-
-form input,
-form textarea {
-  width: 100%;
-  padding: 14px;
-  margin: 10px 0;
-  border-radius: 12px;
-  border: none;
-  outline: none;
-
-  background: rgba(255,255,255,0.05);
-  color: #fff;
-
-  font-size: 1rem;
-  transition: 0.3s;
-
-  border: 1px solid rgba(183, 101, 255, 0.25);
-}
-
-form input:focus,
-form textarea:focus {
-  background: rgba(255,255,255,0.12);
-  border-color: #c67fff;
-  box-shadow: 0 0 15px rgba(183, 101, 255, 0.6);
-}
-
-/* BOTÓN */
-form button {
-  width: 100%;
-  padding: 14px;
-  margin-top: 18px;
-  border-radius: 12px;
-  border: none;
-
-  background: linear-gradient(120deg, #7d2dff, #b765ff);
-  color: #f8eaff;
-  font-weight: bold;
-  font-size: 1.15rem;
-  cursor: pointer;
-
-  transition: 0.3s;
-  box-shadow: 0 0 15px rgba(170, 80, 255, 0.4);
-}
-
-form button:hover {
-  background: linear-gradient(120deg, #b765ff, #7d2dff);
-  box-shadow: 0 0 25px rgba(170, 80, 255, 0.8);
-}
-
-/* TOAST */
-.toast {
-  position: fixed;
-  bottom: -80px;
-  left: 50%;
-  transform: translateX(-50%);
-
-  background: linear-gradient(120deg, #7d2dff, #b765ff);
-  color: #fff;
-
-  padding: 16px 30px;
-  border-radius: 50px;
-  font-weight: bold;
-  font-size: 1rem;
-
-  box-shadow: 0 0 25px rgba(183, 101, 255, 0.7);
-
-  opacity: 0;
-  transition: all 0.6s ease;
-  z-index: 9999;
-}
-
-.toast.show {
-  bottom: 30px;
-  opacity: 1;
-}
+  .futuristic-icon:hover {
+    transform: scale(1.2); /* Aumenta el tamaño al pasar el ratón */
+    color: #a855f7; /* Cambia a un morado más brillante al hacer hover */
+  }
 </style>
-</head>
 
+</head>
 <body>
 
-<h1><i class="fa-solid fa-headset icon-anim"></i> SUPPORT</h1>
+<h1><i class="fa-solid fa-headset icon-anim"></i> Support</h1>
 
 <div class="support-container">
   <p>Si tienes algún problema o duda, contáctanos por:</p>
 
   <ul>
-    <li><i class="fa-solid fa-envelope icon-anim"></i> Email:
+    <li><i class="fa-solid fa-envelope futuristic-icon"></i> Email: 
       <a href="mailto:c77484554@gmail.com">c77484554@gmail.com</a>
     </li>
 
-    <li><i class="fa-brands fa-telegram icon-anim"></i> Telegram - Grupo oficial:
-      <a href="https://t.me/ClashGPToficial" target="_blank">@ClashGPToficial</a>
-    </li>
-
-    <li><i class="fa-brands fa-telegram icon-anim"></i> Telegram - Canal oficial:
-      <a href="https://t.me/ClashGPTChannel" target="_blank">@ClashGPTChannel</a>
-    </li>
-
-    <li><i class="fa-brands fa-telegram icon-anim"></i> Telegram - Gerente:
+    <li><i class="fa-solid fa-user-gear futuristic-icon"></i> Gerente: 
       <a href="https://t.me/ClashGpt_Gerente" target="_blank">@ClashGpt_Gerente</a>
     </li>
   </ul>
@@ -211,7 +133,6 @@ form button:hover {
     <input type="text" name="name" placeholder="Tu nombre" required>
     <input type="email" name="email" placeholder="Tu correo" required>
     <textarea name="message" placeholder="Tu mensaje" rows="5" required></textarea>
-
     <button type="submit">Enviar</button>
   </form>
 </div>
@@ -219,23 +140,9 @@ form button:hover {
 <script>
 document.getElementById('support-form').addEventListener('submit', function(e){
   e.preventDefault();
-  showToast("Mensaje enviado correctamente");
+  alert('Mensaje enviado! (Aquí puedes integrar tu backend o servicio de email)');
   this.reset();
 });
-
-function showToast(text) {
-  let toast = document.createElement("div");
-  toast.className = "toast";
-  toast.innerText = text;
-  document.body.appendChild(toast);
-
-  setTimeout(() => toast.classList.add("show"), 100);
-
-  setTimeout(() => {
-    toast.classList.remove("show");
-    setTimeout(() => toast.remove(), 600);
-  }, 3000);
-}
 </script>
 
 </body>
